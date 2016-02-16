@@ -1,0 +1,1195 @@
+﻿<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>Sauf-O-Mat</title>
+    <script type="text/javascript" src="js/phaser.min.js"></script>
+    <script type="text/javascript" src="js/files.js"></script>
+    <script type="text/javascript" src="js/options.js"></script>
+    <script type="text/javascript" src="js/sounds.js"></script>
+    <script type="text/javascript" charset="utf-8" src="cordova.js"></script>
+    <style type="text/css">
+        body {
+            margin: 0;
+        }
+    </style>
+</head>
+<body>
+    <img style="display: none; width: 60; height: 60; position: absolute; left: window.innerWidth/2; top: window.innerHeight/2;" id="goupImage" src="" onclick="photoClose()" />
+    <script type="text/javascript">
+        //Algemeine Variabeln
+        var w = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
+        var h = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight
+        var game = new Phaser.Game(w, h, Phaser.AUTO, '', { preload: preload, create: create, update: update });
+        var isSmartphone = false;
+        var isAdVersion = true;
+
+        //Mini-Games
+        var ingameGames = ['busfahren', 'kingCircle', 'habNie', 'augensaufen', 'werfDichDicht', 'kistenStapeln'];
+        var gameChance = 1; //1 = standard, 1000000 sehr häufig
+        var gameIndex;
+
+        //Aufgaben
+        var easyTasks = [];
+        var mediumTasks = [];
+        var hardTasks = [];
+        var allTasks = [];
+        var currTask;
+        var extraTasks = [];
+
+        //View
+        var isNoButton;
+        var viewButton = false;
+        var buttonView = 0; //0 grüner Button, 1 Camera, 2 Werbung
+        var isAlcoholShwon = false;
+
+        //Animation
+        var currIcons = [];
+        var spinState = -1;
+        //SaufOMeterAnimation
+        var barometerMoverFinishFrame = 1;
+        var barometerIsMoving = false;
+        var barometerIsBlinking = false;
+        var barometerAnimationCounter = 100;
+        var blinkCounter = 0;
+
+        //Steuerung
+        var backCount = 0;
+        var currPlayer = 0;
+        var lastPlayer;
+        var dificult = 0;
+        var gameChanceAmount = 0;
+        var player = [];
+
+        //Bilder
+        var bg;
+        var popUp;
+        var nameBorder;
+        var pointWindow;
+        var slotMachine;
+        var upArrow;
+        var downArrow;
+        var easyIcon = [];
+        var mediumIcon = [];
+        var hardIcon = [];
+        var gameIcon = [];
+        var saufometerSchriftzug;
+
+        //Sprites
+        var saufometer;
+
+        //Buttons
+        var alcoholButton;
+        var slotMachineStartButton;
+        var checkButton;
+        var cameraButton;
+        var noButton;
+        var optionsButton;
+        var invisibleButton;
+        var adButton;
+
+        //Texte
+        var challengeText;
+        var playerText;
+        var drinkCounter = [];
+        var costText;
+        var abortText
+        var aufgabe;
+        var automatSound;
+        var fontsize = h / 16;
+
+        //Werbung
+        var adCounter = 0;
+        var adLimit = 8; //Standard 8 (Nach [adLimit] Runden kommt eine Werbung
+        var admobid
+
+        //Sprachen
+        var language = 'ne';
+
+        //Timer
+        var spinAnimationTimer;
+        var closeTimer;
+
+        //PlayerListScroll
+        var moveable = false;
+        var downArrowVisible = 0;
+        var downCount = 0;
+
+        //Sounds
+        var rollingSounds = [];
+
+        //Kamera
+        var pictureSource;
+        var destinationType;
+        var gruppenBild;
+
+        document.addEventListener("deviceready", onDeviceReady, false);
+
+        function onDeviceReady() {
+            isSmartphone = true;
+            initAd();
+            window.plugins.insomnia.keepAwake();
+            document.addEventListener("backbutton", onBackKeyDown, false);
+            read('options.txt');
+            window.plugins.AdMob.prepareInterstitial({ adId: admobid.interstitial, autoShow: false });
+            window.analytics.startTrackerWithId('UA-71246328-2');
+        }
+
+        function initAd() {
+            admobid = {};
+            if (/(android)/i.test(navigator.userAgent)) { // for android & amazon-fireos
+                admobid = {
+                    banner: 'ca-app-pub-xxx/xxx', // or DFP format "/6253334/dfp_example_ad"
+                    interstitial: 'ca-app-pub-7859376354700900/6650231673'
+                };
+            } else if (/(ipod|iphone|ipad)/i.test(navigator.userAgent)) { // for ios
+                admobid = {
+                    banner: 'ca-app-pub-xxx/zzz', // or DFP format "/6253334/dfp_example_ad"
+                    interstitial: 'ca-app-pub-7859376354700900/6650231673'
+                };
+            } else { // for windows phone
+                admobid = {
+                    banner: 'ca-app-pub-xxx/zzz', // or DFP format "/6253334/dfp_example_ad"
+                    interstitial: 'ca-app-pub-7859376354700900/6650231673'
+                };
+            }
+        }
+
+        function readFinished() {
+            if (readInput == 'mute:0') {
+                isMuted = false;
+            }
+            else {
+                isMuted = true;
+            }
+        }
+
+        function loadLanguage() {
+            language = localStorage.getItem('language');
+            if (language == 'de') {
+                game.load.json('texts', 'assets/Daten/Languages/mainGame/german.json');
+                game.load.json('aufgabenDat', 'assets/Daten/Languages/mainGame/Tasks/german.json');
+                game.load.json('optionTexts', 'assets/Daten/Languages/options/german.json');
+                game.load.json('extraAufgabenDat', 'assets/Daten/Languages/mainGame/Tasks/extraGerman.json');
+            }
+            else {
+                game.load.json('texts', 'assets/Daten/Languages/mainGame/english.json');
+                game.load.json('aufgabenDat', 'assets/Daten/Languages/mainGame/Tasks/english.json');
+                game.load.json('optionTexts', 'assets/Daten/Languages/options/english.json');
+                game.load.json('extraAufgabenDat', 'assets/Daten/Languages/mainGame/Tasks/extraEnglish.json');
+            }
+        }
+
+        function preload() {
+            //Daten
+            loadLanguage();
+
+            //Bilder
+            game.load.image('background', 'assets/Hintergruende/Dunkel.png');
+            game.load.image('popUpBlue', 'assets/GUI/PopUp/PopUpBlue.png');
+            game.load.image('popUp', 'assets/GUI/PopUp/PopUp400x300.png');
+            game.load.image('popUpLeft', 'assets/GUI/PopUp/PopUp200x150.png');
+            game.load.image('ok', 'assets/GUI/Button/check2.png');
+            game.load.image('drink', 'assets/GUI/Button/NoButton.png');
+            game.load.image('alcoholButton', 'assets/GUI/Button/Alkohol2.png');
+            game.load.image('cameraButton', 'assets/GUI/Button/camera2.png');
+            game.load.image('slotMachine', 'assets/Hintergruende/slot_machine.png');
+            game.load.image('slotMachinebg', 'assets/Hintergruende/slot_machinebg.png');
+            game.load.image('invisible', 'assets/GUI/Button/Unsichtbar.png');
+            game.load.image('easyIcon', 'assets/GUI/SlotMachine/Bierglas2.png');
+            game.load.image('mediumIcon', 'assets/GUI/SlotMachine/Cocktailglas2.png');
+            game.load.image('hardIcon', 'assets/GUI/SlotMachine/Schnappsglas2.png');
+            game.load.image('gameIcon', 'assets/GUI/SlotMachine/Wuerfel.png');
+            game.load.image('optionsButton', 'assets/GUI/Button/Optionen.png');
+            game.load.image('popUpTransparent', 'assets/GUI/PopUp/PopUpTransparent.png');
+            game.load.image('justgames', 'assets/GUI/Button/Busfahren/Ass.png');
+            game.load.image('adButton', 'assets/GUI/Button/AdButton.png');
+            game.load.image('arrowUp', 'assets/GUI/Button/Arrow.png');
+            game.load.image('arrowDown', 'assets/GUI/Button/ArrowDown.png');
+            game.load.image('saufometerSchriftzug', 'assets/GUI/SlotMachine/SaufOMeterSchrifftzug.png')
+
+            //Spritesheets
+            game.load.spritesheet('startButton', 'assets/GUI/Button/start_button3.png', 1000, 450);
+            game.load.spritesheet('soundButton', 'assets/GUI/Button/SoundButton.png', 130, 130);
+            game.load.spritesheet('saufometer', 'assets/GUI/SlotMachine/SaufOMeterSheet.png', 465, 465);
+            game.load.spritesheet('spracheButton', 'assets/GUI/Button/SpracheButton.png', 128, 127);
+
+            //Übergebene Daten
+            var newPlayer = [];
+            for (var i = 0; i < parseInt(localStorage.getItem('playercount'), 10) ; i++) {
+                if (localStorage.getItem('playername' + i) != 'undefined' && localStorage.getItem('playerweight' + i) != 'undefined' && localStorage.getItem('playergender' + i) != 'undefined') {
+                    newPlayer.push({ name: localStorage.getItem('playername' + i), drinkcount: 0, weight: localStorage.getItem('playerweight' + i), gender: localStorage.getItem('playergender' + i) });
+                }
+            }
+            if (newPlayer.length > player.length) {
+                player = newPlayer;
+            }
+
+            if (localStorage.getItem('currPlayer') != 'undefined' && localStorage.getItem('currPlayer') != null) {
+                currPlayer = localStorage.getItem('currPlayer');
+            }
+            else {
+                currPlayer = 0;
+            }
+
+            for (var i = 0; i < player.length; i++) {
+                if (localStorage.getItem('playerdrinks' + i) != null && typeof localStorage.getItem('playerdrinks' + i) != 'undefined' && localStorage.getItem('playerdrinks' + i) != 'undefined') {
+                    player[i].drinkcount = localStorage.getItem('playerdrinks' + i);
+                }
+                else {
+                    player[i].drinkcount = 0;
+                }
+            }
+            var aC = parseInt(localStorage.getItem('currPlayer'));
+            if (aC != null && aC != 'undefined') {
+                adCounter = aC;
+            }
+            if (player.length > 1) {
+                ingameGames.push("bierGeballer");
+            }
+        }
+
+        function create() {
+            texts = game.cache.getJSON('texts');
+            extraTasks = game.cache.getJSON('extraAufgabenDat');
+            var optionTexts = game.cache.getJSON('optionTexts');
+            var textstyle = { font: '300% Arial', fill: '#000', align: 'center', wordWrap: 'true', wordWrapWidth: w / 1.5 };
+            bg = game.add.image(0, 0, 'background');
+            bg.width = game.width;
+            bg.height = game.height;
+            
+
+            slotMachinebg = game.add.image(0, 0, 'slotMachinebg');
+            slotMachinebg.visible = false;
+
+
+            var scale = game.width / 1500;
+            for (var i = 0; i < 3; i++) {
+                /*if (isSmartphone) {
+                    rollingSounds[i] = new Media('/android_asset/www/assets/sounds/AutomatRolling.wav');
+                }*/
+
+                easyIcon.push(game.add.image(0, 0, 'easyIcon'));
+                mediumIcon.push(game.add.image(0, 0, 'mediumIcon'));
+                hardIcon.push(game.add.image(0, 0, 'hardIcon'));
+                gameIcon.push(game.add.image(0, 0, 'gameIcon'));
+
+                easyIcon[i].anchor.set(0.5);
+                mediumIcon[i].anchor.set(0.5);
+                hardIcon[i].anchor.set(0.5);
+                gameIcon[i].anchor.set(0.5);
+
+                easyIcon[i].scale.set(game.width / 2200, game.width / 2200);
+                mediumIcon[i].scale.set(game.width / 2200, game.width / 2200);
+                hardIcon[i].scale.set(game.width / 2200, game.width / 2200);
+                gameIcon[i].scale.set(scale, scale);
+
+                easyIcon[i].visible = false;
+                mediumIcon[i].visible = false;
+                hardIcon[i].visible = false;
+                gameIcon[i].visible = false;
+            }
+
+            slotMachine = game.add.image(0, 0, 'slotMachine');
+            slotMachine.width = game.width;
+            slotMachine.height = game.height;
+            slotMachine.visible = false;
+
+            slotMachinebg.width = slotMachine.width;
+            slotMachinebg.height = slotMachine.height;
+
+            saufometer = game.add.sprite(w - w / 1.19, h / 1.15, 'saufometer');
+            saufometer.anchor.set(0.5);
+            saufometer.width = h / 4;
+            saufometer.height = saufometer.width;
+
+            saufometerSchriftzug = game.add.image(saufometer.x, saufometer.y/1.3, 'saufometerSchriftzug');
+            saufometerSchriftzug.anchor.set(0.5, 0);
+            var schriftzugScaling =  saufometer.width / saufometerSchriftzug.width * 2.4;
+            saufometerSchriftzug.scale.setTo(schriftzugScaling, schriftzugScaling);
+
+            pointWindow = game.add.image(0, 0, 'popUpLeft');
+            pointWindow.width = game.width / 3;
+            pointWindow.height = game.world.height / 6 + game.world.height / 1.5;
+            pointWindow.visible = true;
+            for (var i = 0; i < player.length; i++) {
+                drinkCounter.push(game.add.text(16, 0, player[i].name + ': ' + player[i].drinkcount, { font: '200% Arial', fill: '#000', align: 'center', wordWrap: 'true', wordWrapWidth: pointWindow.width }));
+                drinkCounter[i].visible = true;
+                drinkCounter[i].fontSize = fontsize;
+            }
+
+            upArrow = game.add.image(0, 0, 'arrowUp');
+            upArrow.width = pointWindow.width;
+            upArrow.height = h / 9;
+            upArrow.visible = false;
+
+            downArrow = game.add.image(0, pointWindow.height - upArrow.height, 'arrowDown');
+            downArrow.width = pointWindow.width;
+            downArrow.height = h / 9;
+            downArrow.visible = false;
+
+            drinkCounter[0].y = upArrow.height;
+            for (var i = 1; i < player.length; i++) {
+                drinkCounter[i].y = drinkCounter[i - 1].y + drinkCounter[0].height;
+            }
+
+            nameBorder = game.add.image(pointWindow.width, 0, 'popUp');
+            nameBorder.width = game.width * 2 / 3;
+            nameBorder.height = game.height / 6;
+            nameBorder.y = 0;
+            nameBorder.visible = true;
+
+            popUp = game.add.image(pointWindow.width, nameBorder.height, 'popUpBlue');
+            popUp.width = game.width * 2 / 3;
+            popUp.height = game.height / 1.5;
+            popUp.visible = true;
+
+            cameraButton = game.add.button(pointWindow.width, popUp.y + popUp.height, 'cameraButton', capturePhoto, this);
+            cameraButton.width = game.width / 3;
+            cameraButton.height = game.height / 6;
+            cameraButton.visible = false;
+
+            adButton = game.add.button(pointWindow.width, popUp.y + popUp.height, 'adButton', adButtonClick, this);
+            adButton.width = game.width / 3;
+            adButton.height = game.height / 6;
+            adButton.visible = false;
+
+            optionsButton = game.add.button(0, pointWindow.height, 'optionsButton', showOptions);
+            optionsButton.width = game.width / 3 / 2;
+            optionsButton.height = game.height / 6;
+            optionsButton.visible = true;
+
+            alcoholButton = game.add.button(optionsButton.x + optionsButton.width, pointWindow.height, 'alcoholButton', alcoholWindowToggle, this);
+            alcoholButton.width = game.width / 3 / 2;
+            alcoholButton.height = game.height / 6;
+            alcoholButton.visible = true;
+
+            playerText = game.add.text(game.world.centerX, nameBorder.y + nameBorder.height / 2, player[currPlayer].name, { font: '400% Arial', fill: '#000', align: 'center' });
+            playerText.anchor.set(0.5);
+            playerText.fontSize = fontsize;
+
+            slotMachineStartButton = game.add.sprite(game.width / 1.6, game.height / 1.6, 'startButton', 0);
+            slotMachineStartButton.width = game.width / 5;
+            slotMachineStartButton.height = game.height / 5;
+            slotMachineStartButton.inputEnabled = true;
+            slotMachineStartButton.events.onInputDown.add(slotMachineButtonDown);
+            slotMachineStartButton.events.onInputUp.add(slotMachineButtonUp);
+
+            challengeText = game.add.text(Math.floor(popUp.x + popUp.width / 2), Math.floor(popUp.y + popUp.height / 2.2), 'Tippen zum Starten', textstyle);
+            challengeText.anchor.set(0.5);
+            challengeText.fontSize = fontsize;
+            challengeText.visible = true;
+
+            checkButton = game.add.button(pointWindow.width, popUp.y + popUp.height, 'ok', okClick, this);
+            checkButton.width = game.width / 3;
+            checkButton.height = game.height / 6;
+            checkButton.visible = true;
+
+            noButton = game.add.button(cameraButton.x + cameraButton.width, cameraButton.y, 'drink', drinkClick, this);
+            noButton.width = cameraButton.width;
+            noButton.height = cameraButton.height;
+            noButton.visible = true;
+
+            costText = game.add.text(Math.floor(noButton.x + noButton.width / 2), Math.floor(noButton.y + noButton.height / 2), texts[1], { font: '200% Arial', fill: '#000', align: 'center' });
+            costText.anchor.set(0.5, 0.5);
+            costText.visible = true;
+            costText.fontSize = fontsize;
+
+            initOptions('ok', 'drink', 'popUpTransparent', 'soundButton', 'invisible', 'spracheButton', optionTexts, true);
+
+            getAllTask();
+            if (isSmartphone) {
+                saveGame(player, currPlayer);
+            }
+            startNextRound();
+        }
+
+        function scroll() {
+            var startX = game.input.worldX;
+            var endY = game.input.worldY;
+            if (startX > 0 && startX < pointWindow.width && endY < pointWindow.height && moveable == true && isOptionsShown == false) {
+                var startY = (h / 6 + h / 1.5) / 2;
+                var direction = "0";
+                if (startY < endY) {
+                    direction = "up";
+                }
+                else if (startY > endY) {
+                    direction = "down";
+                }
+                if (direction == "up") {
+                    if (drinkCounter[player.length - 1].y > downArrow.y) {
+                        for (var i = 0; i < player.length; i++) {
+                            drinkCounter[i].y = drinkCounter[i].y - (drinkCounter[0].height) * 3;
+                        }
+                        downCount++;
+                        if ((drinkCounter[player.length - 1].y + (drinkCounter[0].height) * 3) > downArrow.y) {
+                            downArrowVisible = 1;
+                        }
+                    }
+                }
+                else {
+                    if (downCount > 0) {
+                        for (var i = 0; i < player.length; i++) {
+                            drinkCounter[i].y = drinkCounter[i].y + (drinkCounter[0].height) * 3;
+                        }
+                        downCount--;
+                        downArrowVisible = 0;
+                    }
+                }
+                direction = "0";
+                if (downCount == 0) {
+                    upArrow.visible = false;
+                }
+                else {
+                    upArrow.visible = true;
+                }
+                if (downArrowVisible == 0 && player.length > 10) {
+                    downArrow.visible = true;
+                }
+                else {
+                    downArrow.visible = false;
+                }
+            }
+        }
+
+        function showAd() {
+            if (isSmartphone) {
+                AdMob.showInterstitial();
+            }
+        }
+
+        function createAd() {
+            if (isSmartphone) {
+                AdMob.prepareInterstitial({ adId: admobid.interstitial, autoShow: false });
+            }
+        }
+
+        //Spin Animation:
+
+        function spinAnimation() {
+            //Init icons
+            var xOffset = w / 30;
+            var startXPosition = [w / 3.3 - xOffset, w / 2 - xOffset, w / 2.9 * 2 - xOffset];
+            for (var i = 0; i < 3; i++) {
+                easyIcon[i].y = -h;
+                easyIcon[i].x = startXPosition[i];
+                easyIcon[i].visible = true;
+
+                mediumIcon[i].y = -h;
+                mediumIcon[i].x = startXPosition[i];
+                mediumIcon[i].visible = true;
+
+                hardIcon[i].y = -h;
+                hardIcon[i].x = startXPosition[i];
+                hardIcon[i].visible = true;
+
+                gameIcon[i].y = -h;
+                gameIcon[i].x = startXPosition[i];
+                gameIcon[i].visible = true;
+            }
+
+            for (var i = 0; i < 3; i++) {
+                getNewIcon(i);
+            }
+            spinAnimationTimer = game.time.create(false);
+            spinAnimationTimer.loop(30, moveIcon, this);
+            spinAnimationTimer.start();
+        }
+
+       
+        function getNewIcon(i) {
+            /*if (isSmartphone && !isMuted) {
+                rollingSounds[i].stop();
+                rollingSounds[i].start();
+            }*/
+            var rnd;
+            var icon;
+            var easyChance = 4; //Standard 4, 4, 3
+            var mediumChance = 4;
+            var hardChance = 3;
+            var sumChance = easyChance + mediumChance + hardChance + gameChance;
+            var diff;
+
+            rnd = Math.floor(Math.random() * sumChance);
+
+            if (rnd < easyChance) {
+                diff = 0.2;
+                icon = easyIcon[i];
+            }
+            else if (rnd < easyChance + mediumChance) {
+                diff = 1.4;
+                icon = mediumIcon[i];
+            }
+            else if (rnd < (easyChance + mediumChance + hardChance)) {
+                diff = 2.8;
+                icon = hardIcon[i];
+            }
+            else if (rnd < sumChance) {
+                diff = 3;
+                icon = gameIcon[i];
+            }
+            else {
+            }
+            currIcons[i] = { icon: icon, dificult: diff };
+        }
+
+        var isSpinning = false;
+        function moveIcon() {
+            var moveSpeeds = [2, 2.6, 3];
+            var yStopPosition = h / 2.68;
+            var gameTime = game.time.elapsed;
+            console.log(spinState);
+            switch (spinState) {
+                case 0: //Kein Button gedrückt
+                    for (var i = 0; i < 3; i++) {
+                        currIcons[i].icon.y += moveSpeeds[i] * gameTime;
+                        if (currIcons[i].icon.y > h) {
+                            currIcons[i].icon.y = -h;
+                            getNewIcon(i);
+                        }
+                        isSpinning = true;
+                    }
+                    break;
+                case 1: //Erstes Rad angehalten
+                    for (var i = 1; i < 3; i++) { 
+                        currIcons[i].icon.y += moveSpeeds[i] * gameTime;
+                        if (currIcons[i].icon.y > h) {
+                            currIcons[i].icon.y = -h;
+                            getNewIcon(i);
+                        }
+                    }
+                    currIcons[0].icon.y += (yStopPosition - currIcons[0].icon.y) / 2;
+                    break;
+                case 2: //zweites Rad angehalten
+                    currIcons[2].icon.y += moveSpeeds[2] * gameTime;
+                    if (currIcons[2].icon.y > h) {
+                        currIcons[2].icon.y = -h;
+                        getNewIcon(2);
+                    }
+                    currIcons[0].icon.y += (yStopPosition - currIcons[0].icon.y) / 2;
+                    currIcons[1].icon.y += (yStopPosition - currIcons[1].icon.y) / 2;
+                    break;
+                case 3: //drittes Rad angehalten
+                    for (var i = 0; i < 3; i++) {
+                        currIcons[i].icon.y += (yStopPosition - currIcons[i].icon.y) / 2;
+                    }
+                    if (currIcons[2].icon.y > yStopPosition - 0.02 && currIcons[2].icon.y < yStopPosition + 0.02) {
+                        spinState = 4;
+                    }
+                    break;
+                case 4:
+                    for (var i = 0; i < 3; i++) {
+                        currIcons[i].icon.y = yStopPosition;
+                    }
+                    spinAnimationTimer.stop();
+                    spinAnimationTimer.destroy();
+                    gameChanceAmount = 0;
+                    dificult = 0;
+                    for (var i = 0; i < 3; i++) {
+                        currIcons[i].icon.y += (yStopPosition - currIcons[i].icon.y) / 2;
+                        if (currIcons[i].dificult == 3) {
+                            gameChanceAmount++;
+                        }
+                    }
+
+                    if (currIcons[0].dificult == currIcons[1].dificult && currIcons[0].dificult == currIcons[2].dificult) {     //Drei gleiche Icons (Hauptgewinn)
+                        if (currIcons[0].dificult != 4) {
+                            dificult = Math.floor(10 + currIcons[0].dificult);
+                            barometerMoverFinishFrame = Math.floor(10 + currIcons[0].dificult - 3);
+                        }
+                    }
+                    else {                                                                                                      //Unterschiedliche Icons
+                        for (var i = 0; i < 3; i++) {
+                            if (currIcons[i].dificult != 3) {
+                                dificult += currIcons[i].dificult;
+                            }
+                        }
+                        var tmpDificult = ((dificult) / (3 - gameChanceAmount));
+                        dificult = Math.floor(tmpDificult)
+                        if (tmpDificult > 0.6) {
+                            barometerMoverFinishFrame++;
+                        }
+                        if (tmpDificult > 0.95) {
+                            barometerMoverFinishFrame++;
+                        }
+                        if (tmpDificult > 1.5) {
+                            barometerMoverFinishFrame++;
+                        }
+                        if (tmpDificult > 2) {
+                            barometerMoverFinishFrame++;
+                        }
+                        if (tmpDificult > 2.2) {
+                            barometerMoverFinishFrame++;
+                        }
+                        if (tmpDificult > 10) {
+                            barometerMoverFinishFrame++;
+                        }
+                    }
+                    if (Math.floor(Math.random() * 3) < gameChanceAmount) {
+                        dificult = 3;
+                    }
+                    barometerIsMoving = true;
+                    break;
+            }
+        }
+
+        function slotMachineButtonDown() {
+            playAudio('/android_asset/www/assets/sounds/button.wav');
+            if (spinState == -1) {
+                slotMachineStartButton.frame = 1;
+            }
+            else {
+                slotMachineStartButton.frame = 3;
+            }
+        }
+
+        function slotMachineButtonUp() {
+            slotMachineStartButton.frame = 2;
+
+            if (spinState == -1) {
+                spinState++;
+                spinAnimation();
+            }
+            else if (spinState < 4) {
+                spinState++;
+            }
+        }
+
+        //Ende Animation
+
+        function photoClose() {
+            document.getElementById('goupImage').style.visibility = 'hidden';
+            startNextRound();
+        }
+
+        function showMainView() {
+            //Bilder
+            moveable = true;
+            popUp.visible = true;
+            nameBorder.visible = true;
+            pointWindow.visible = true;
+            challengeText.visible = true;
+            alcoholButton.visible = true;
+            optionsButton.visible = true;
+            slotMachinebg.visible = false;
+            slotMachine.visible = false;
+            if (downCount == 0) {
+                upArrow.visible = false;
+            }
+            else {
+                upArrow.visible = true;
+            }
+            if (player.length > 10) {
+                downArrow.visible = true;
+            }
+
+            for (var i = 0; i < drinkCounter.length; i++) {
+                drinkCounter[i].visible = !drinkCounter[i].visible;
+            }
+
+            if (buttonView == 0) {
+                checkButton.visible = true;
+                cameraButton.visible = false;
+                adButton.visible = false;
+            }
+            else if (buttonView == 1) {
+                checkButton.visible = false;
+                cameraButton.visible = true;
+                adButton.visible = false;
+            }
+            else {
+                checkButton.visible = false;
+                cameraButton.visible = false;
+                adButton.visible = true;
+            }
+            if (dificult == 3) {
+                checkButton.visible = false;
+            }
+            noButton.visible = isNoButton;
+            costText.visible = isNoButton;
+            playerText.x = nameBorder.x + nameBorder.width / 2
+            slotMachineStartButton.visible = false;
+        }
+
+        function onBackKeyDown() {
+            if (backCount == 1) {
+                navigator.app.exitApp();
+            }
+            else {
+                backCounter = 1;
+                closeTimer = game.time.create(false);
+                closeTimer.loop(2000, closeOver, this);
+                closeTimer.start();
+            }
+        }
+
+        function closeOver() {
+            backCount = 0;
+            closeTimer.destroy();
+        }
+
+        function alcoholWindowToggle() {
+            playAudio('/android_asset/www/assets/sounds/button.wav');
+            if (isAlcoholShwon) {
+                for (var i = 0; i < drinkCounter.length; i++) {
+                    drinkCounter[i].text = player[i].name + ': ' + player[i].drinkcount;
+                }
+            }
+            else {
+                calculateAlcoholLevel();
+            }
+            isAlcoholShwon = !isAlcoholShwon;
+        }
+
+        function calculateAlcoholLevel() {
+            for (var i = 0; i < player.length; i++) {
+                var alcoholSize = player[i].drinkcount * 20 * 0.15 * 0.8;
+                var bodyLiquid;
+                if (player[i].gender == 'm') {
+                    bodyLiquid = 0.68;
+                }
+                else {
+                    bodyLiquid = 0.55;
+                }
+                var level = alcoholSize / (player[i].weight * bodyLiquid);
+                level = Math.floor(level * 100);
+                drinkCounter[i].text = player[i].name + ': ' + (level / 100) + '%';
+            }
+        }
+
+        function spinComplete() {
+            endSpinAnimationTimer.stop();
+            endSpinAnimationTimer.destroy();
+
+            for (var i = 0; i < 3; i++) {
+                easyIcon[i].visible = false;
+                mediumIcon[i].visible = false;
+                hardIcon[i].visible = false;
+                gameIcon[i].visible = false;
+            }
+            if (dificult == 3) {
+                initGame();
+            }
+            else {
+                getRandomTask(dificult);
+                if (currTask.kosten != 0) {
+                    costText.text = texts[1] + currTask.kosten;
+                    isNoButton = true;
+                }
+                else {
+                    isNoButton = false;
+                }
+                if (currTask.ziel == 'photo') {
+                    buttonView = 1;
+                }
+                else if (currTask.ziel == 'ad') {
+                    buttonView = 2;
+                }
+                else {
+                    buttonView = 0;
+                }
+                viewButton = true;
+                challengeText.text = currTask.text;
+                showMainView();
+            }
+        }
+
+        function increasePlayer() {
+            if (currPlayer >= player.length - 1) {
+                currPlayer = 0;
+            }
+            else {
+                currPlayer++;
+            }
+            playerText.text = player[currPlayer].name;
+        }
+
+        function getBestPlayer() {
+            var max = player[0].drinkcount;
+            var drinker = [];
+            for (var i = 0; i < player.length; i++) {
+                if (player[i].drinkcount > max) {
+                    drinker = [i];
+                }
+                else if (player[i].drinkcount == max) {
+                    drinker.push(i);
+                }
+            }
+            return drinker;
+        }
+
+        function getWorstPlayer() {
+            var min = player[0].drinkcount;
+            var drinker = [];
+            for (var i = 0; i < player.length; i++) {
+                if (player[i].drinkcount < min) {
+                    drinker = [i];
+                }
+                else if (player[i].drinkcount == min) {
+                    drinker.push(i);
+                }
+            }
+            return drinker;
+
+        }
+
+        function drinkClick() {
+            playAudio('/android_asset/www/assets/sounds/button.wav');
+
+            player[currPlayer].drinkcount = parseInt(player[currPlayer].drinkcount, 10) + parseInt(currTask.kosten, 10);
+            endRound();
+        }
+
+        function adButtonClick() {
+            playAudio('/android_asset/www/assets/sounds/button.wav');
+            showAd();
+            createAd();
+            endRound();
+        }
+
+        function okClick() {
+            playAudio('/android_asset/www/assets/sounds/button.wav');
+            if (currTask.anzahl != 0) {
+
+            }
+            //Einzelne Spieler werden abgefragt
+            if (currTask.ziel == 'self') {
+                player[currPlayer].drinkcount = parseInt(player[currPlayer].drinkcount, 10) + parseInt(currTask.anzahl, 10);
+            }
+            else if (currTask.ziel == 'switchPlaceLeft') {
+                if (currPlayer >= player.length - 1) {
+                    switchPlayerPlace(currPlayer, 0);
+                }
+                else {
+                    switchPlayerPlace(currPlayer, currPlayer + 1);
+                }
+            }
+            else if (currTask.ziel == 'switchPlaceRight') {
+                if (currPlayer <= 0) {
+                    switchPlayerPlace(currPlayer, player.length - 1);
+                }
+                else {
+                    switchPlayerPlace(currPlayer, currPlayer - 1);
+                }
+            }
+                /*else if (currTask.ziel == 'low') {
+                    var i = getWorstPlayer();
+                    player[i].drinkcount = parseInt(player[i].drinkcount, 10) + parseInt(currTask.anzahl, 10);
+                }
+                else if (currTask.ziel == 'high') {
+                    var i = getBestPlayer();
+                    player[i].drinkcount = parseInt(player[i].drinkcount, 10) + parseInt(currTask.anzahl, 10);
+                }*/
+            else {  //Mengen von Spielern werden in der for-Schleife verarbeitet
+                for (var i = 0; i < player.length; i++) {
+                    if (currTask.ziel == 'men') {
+                        if (player[i].men == 'true') {
+                            player[i].drinkcount = parseInt(player[i].drinkcount, 10) + parseInt(currTask.anzahl, 10);
+                        }
+                    }
+                    else if (currTask.ziel == 'women') {
+                        if (player[i].men == 'false') {
+                            player[i].drinkcount = parseInt(player[i].drinkcount, 10) + parseInt(currTask.anzahl, 10);
+                        }
+                    }
+                    else if (currTask.ziel == 'all') {
+                        player[i].drinkcount = parseInt(player[i].drinkcount, 10) + parseInt(currTask.anzahl, 10);
+                    }
+                }
+            }
+            endRound();
+        }
+
+        function switchPlayerPlace(playerId1, playerId2) {
+            var tmp = player[playerId1];
+            player[playerId1] = player[playerId2];
+            player[playerId2] = tmp;
+        }
+
+        function showSlotMachine() {
+            //Bilder
+            popUp.visible = false;
+            nameBorder.visible = false;
+            pointWindow.visible = false;
+            slotMachinebg.visible = true;
+            slotMachine.visible = true;
+            moveable = false;
+            upArrow.visible = false;
+            downArrow.visible = false;
+
+            //Texte
+            for (var i = 0; i < drinkCounter.length; i++) {
+                drinkCounter[i].visible = false;
+            }
+            challengeText.visible = false;
+            alcoholButton.visible = false;
+            optionsButton.visible = false;
+            cameraButton.visible = false;
+            adButton.visible = false;
+            checkButton.visible = false;
+            noButton.visible = false;
+            costText.visible = false;
+
+            playerText.x = w / 2 - w / 28;
+            slotMachineStartButton.visible = true;
+        }
+
+        function startNextRound() {
+            adCounter++;
+            localStorage.setItem("adCounter", adCounter);
+            if (adCounter == adLimit) {
+                adCounter = 0;
+                showAd();
+            }
+            else if (adCounter == 1) {
+                createAd();
+            }
+            viewButton = false;
+            saufometer.frame = 0;
+            spinState = -1;
+            gameChanceAmount = 0;
+            slotMachineStartButton.frame = 0;
+            showSlotMachine();
+        }
+
+        function endRound() {
+            increasePlayer();
+            for (var i = 0; i < drinkCounter.length; i++) {
+                drinkCounter[i].text = player[i].name + ': ' + player[i].drinkcount;
+            }
+            if (isSmartphone) {
+                saveGame(player, currPlayer);
+            }
+            startNextRound();
+        }
+
+        function chooseMiniGame() {
+            var games = [];
+            for (var i = 0; i < ingameGames.length; i++) {
+                if (localStorage.getItem('used' + i) == '0') {
+                    games.push(i);
+                }
+            }
+            if (games.length == 0) {
+                for (var i = 0; i < ingameGames.length; i++) {
+                    localStorage.setItem('used' + i, 0);
+                }
+                return Math.floor(Math.random() * ingameGames.length);
+            }
+            else {
+                return games[Math.floor(Math.random() * games.length)];
+            }
+        }
+
+        function initGame() {
+            //NEWGAME: string in teexts datei einfügen und auslesen
+            gameIndex = chooseMiniGame();
+            var currGame = ingameGames[gameIndex];
+            var gameName;
+            if (currGame == 'busfahren') {
+                gameName = texts[5];
+            }
+            else if (currGame == 'kingCircle') {
+                if (Math.floor(Math.random() * 2) == 0) {
+                    gameName = texts[6];
+                    localStorage.setItem('isKings', 0);
+
+                }
+                else {
+                    gameName = texts[7];
+                    localStorage.setItem('isKings', 1);
+                }
+            }
+            else if (currGame == 'werfDichDicht') {
+                gameName = texts[8];
+            }
+            else if (currGame == 'augensaufen') {
+                gameName = texts[9];
+            }
+            else if (currGame == 'habNie') {
+                gameName = texts[3];
+            }
+            else if (currGame == 'kistenStapeln') {
+                gameName = texts[10];
+            }
+            else if (currGame == 'bierGeballer') {
+                gameName = texts[11];
+            }
+            challengeText.text = gameName + texts[4];
+            abortButton.visible = false;
+            adButton.visible = false;
+            cameraButton.visible = false;
+            isNoButton = false;
+            showMainView();
+            game.input.onDown.addOnce(startGame);
+        }
+
+        function startGame() {
+            //Daten übergeben:
+            for (var i = 0; i < player.length; i++) {
+                localStorage.setItem('playername' + i, player[i].name);
+                localStorage.setItem('playerdrinks' + i, player[i].drinkcount);
+            }
+            localStorage.setItem('kastriert', 1);
+            localStorage.setItem('currPlayer', currPlayer);
+            localStorage.setItem('playercount', player.length);
+            localStorage.setItem('used' + gameIndex, 1);
+            //Seite Wechseln
+            if (ingameGames[gameIndex] == 'kingCircle') {
+                document.location.href = 'circleOfDeath.html';
+            }
+            else {
+                document.location.href = ingameGames[gameIndex] + '.html';
+            }
+        }
+
+        function getAllTask() {
+            var aufgabenData = game.cache.getJSON('aufgabenDat');
+            allTasks = [];
+            easyTasks = [];
+            mediumTasks = [];
+            hardTasks = [];
+            var newGame = localStorage.getItem('newGame') == '1';
+            for (var i = 0; i < aufgabenData.length; i++) {
+                allTasks.push(aufgabenData[i]);
+                if (aufgabenData[i].kategorie == 'wenig') {
+                    easyTasks.push(aufgabenData[i]);
+                }
+                else if (aufgabenData[i].kategorie == 'mittel') {
+                    mediumTasks.push(aufgabenData[i]);
+                }
+                else if (aufgabenData[i].kategorie == 'viel') {
+                    hardTasks.push(aufgabenData[i]);
+                }
+                if (newGame) {
+                    localStorage.setItem('usedTask' + aufgabenData[i].id, '0');
+                }
+            }
+        }
+
+        function refreshTasks() {
+            for (var i = 0; i < allTasks.length; i++) {
+                localStorage.setItem('usedTask' + allTasks[i].id, '0');
+            }
+        }
+
+        function getRandomTask(dificult) {
+            var dest = [];
+            var source;
+            if (dificult < 3) {
+                switch (dificult) {
+                    case 0:
+                        source = easyTasks;
+                        break;
+                    case 1:
+                        source = mediumTasks;
+                        break;
+                    case 2:
+                        source = hardTasks;
+                        break;
+                    default:
+                        console.log("sollte nicht passieren, dificult = " + dificult);
+                        break;
+                }
+                for (var i = 0; i < source.length; i++) {
+                    var used = localStorage.getItem('usedTask' + source[i].id);
+                    if (used == '0') {
+                        dest.push(source[i]);
+                    }
+                }
+                var index = Math.floor(Math.random() * dest.length);
+                localStorage.setItem('usedTask' + dest[index].id, '1');
+                currTask = dest[index];
+                if (dest.length < 2) {
+                    refreshTasks();
+                }
+                return index;
+            }
+            else if (dificult >= 10) {
+                currTask = extraTasks[dificult - 10];
+            }
+        }
+
+        function getMax(values) {
+            var max = 0;
+            for (var i = 0; i < values.length; i++) {
+                if (values[i] > max) {
+                    max = values[i];
+                }
+            }
+            return max;
+        }
+
+        function capturePhoto() {
+            if (isSmartphone) {
+                navigator.camera.getPicture(onPhotoDataSuccess, onFail, {
+                    quality: 50,
+                    destinationType: destinationType.FILE_URI, saveToPhotoAlbum: true
+                });
+            }
+        }
+
+        function onPhotoDataSuccess(imageData) {
+            game.input.disabled = false;
+            gruppenBild = document.getElementById('goupImage');
+            gruppenBild.style.display = 'block';
+            gruppenBild.src = imageData;
+            gruppenBild.width = w;
+            gruppenBild.height = h;
+        }
+
+        function onFail(message) {
+            alert('Camera Error: ' + message);
+        }
+
+        function update() {
+            updateFactor = game.time.elapsed * 1;
+            game.input.onDown.add(scroll, this);
+
+            if (barometerIsMoving) {
+                barometerAnimationCounter -= game.time.elapsed;
+                if (barometerAnimationCounter <= 0) {
+                    barometerAnimationCounter = 100;
+                    saufometer.frame++;
+                    if (saufometer.frame == barometerMoverFinishFrame) {
+                        barometerIsMoving = false;
+                        barometerMoverFinishFrame = 1;
+
+
+                        if (dificult >= 10) {
+                            barometerIsBlinking = true;
+                        }
+                        else {
+                            endSpinAnimationTimer = game.time.create(false);
+                            endSpinAnimationTimer.loop(1500, spinComplete, this);
+                            endSpinAnimationTimer.start();
+                            
+                        }
+                    }
+                }
+            }
+            else if (barometerIsBlinking) {
+                barometerAnimationCounter -= game.time.elapsed;
+                if (barometerAnimationCounter <= 0) {
+                    barometerAnimationCounter = 200;
+                    blinkCounter++;
+                    if (saufometer.frame != dificult) {
+                        saufometer.frame = dificult;
+                    }
+                    else {
+                        saufometer.frame = dificult - 3;
+                    }
+                    if (blinkCounter > 4) {
+                        barometerIsBlinking = false;
+                        blinkCounter = 0;
+
+                        endSpinAnimationTimer = game.time.create(false);
+                        endSpinAnimationTimer.loop(1500, spinComplete, this);
+                        endSpinAnimationTimer.start();
+                    }
+                }
+            }
+        }
+    </script>
+</body>
+</html>

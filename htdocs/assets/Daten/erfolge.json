@@ -1,0 +1,38 @@
+﻿[
+	{
+	"text":"Trinke 100 mal",
+	"hat":"false"
+	},
+	{
+	"text":"Trinke 200 mal",
+	"hat":"false"
+	},
+	{
+	"text":"Trinke 300 mal",
+	"hat":"false"
+	}
+	{
+	"text":"Trinke beim Busfahren 10 mal",
+	"hat":"false"
+	},
+	{
+	"text":"Trinke beim Busfahren 20 mal",
+	"hat":"false"
+	},
+	{
+	"text":"Trinke beim Busfahren 30 mal",
+	"hat":"false"
+	},
+	{
+	"text":"Fahre Bus ohne zu trinken",
+	"hat":"false"
+	},
+	{
+	"text":"Spiele an Halloween",
+	"hat":"kuerbis"
+	},
+	{
+	"text":"Spiele an Weinachten",
+	"hat":"weinachtsmuetze"
+	}
+]

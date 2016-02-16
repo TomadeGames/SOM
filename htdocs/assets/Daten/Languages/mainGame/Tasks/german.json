@@ -1,0 +1,1118 @@
+﻿[
+  {
+    "id": "1",
+    "text": "Trinke 1 mal",
+    "kosten": "0",
+    "warscheinlichkeit": "4",
+    "anzahl": "1",
+    "ziel": "self",
+    "kategorie": "wenig"
+  },
+  {
+    "id": "2",
+    "text": "Sprich eine Runde lang wie ein Wal",
+    "kosten": "2",
+    "warscheinlichkeit": "1",
+    "anzahl": "0",
+    "ziel": "self",
+    "kategorie": "mittel"
+  },
+  {
+    "id": "3",
+    "text": "Wirf eine Münze, bei Kopf trinkst du, bei Zahl alle",
+    "kosten": "0",
+    "warscheinlichkeit": "1",
+    "anzahl": "1",
+    "ziel": "no",
+    "kategorie": "mittel"
+  },
+  {
+    "id": "4",
+    "text": "Jeder springt, der letzte trinkt",
+    "kosten": "0",
+    "warscheinlichkeit": "1",
+    "anzahl": "1",
+    "ziel": "no",
+    "kategorie": "wenig"
+  },
+  {
+    "id": "5",
+    "text": "Zieh eine Grimasse",
+    "kosten": "1",
+    "warscheinlichkeit": "1",
+    "anzahl": "1",
+    "ziel": "no",
+    "kategorie": "wenig"
+  },
+  {
+    "id": "6",
+    "text": "Alle die nicht mehr weiterspielen wollen trinken 3",
+    "kosten": "0",
+    "warscheinlichkeit": "1",
+    "anzahl": "3",
+    "ziel": "no",
+    "kategorie": "mittel"
+  },
+  {
+    "id": "7",
+    "text": "Strecke deine Zunge eine Runde lang aus",
+    "kosten": "3",
+    "warscheinlichkeit": "1",
+    "anzahl": "3",
+    "ziel": "no",
+    "kategorie": "viel"
+  },
+  {
+    "id": "8",
+    "text": "Trinke einen ohne Hände zu benutzen",
+    "kosten": "0",
+    "warscheinlichkeit": "1",
+    "anzahl": "1",
+    "ziel": "no",
+    "kategorie": "mittel"
+  },
+  {
+    "id": "9",
+    "text": "Lege deinen Finger auf den Boden und renne drei mal drum herum",
+    "kosten": "2",
+    "warscheinlichkeit": "1",
+    "anzahl": "2",
+    "ziel": "no",
+    "kategorie": "mittel"
+  },
+  {
+    "id": "10",
+    "text": "Sitze eine Runde lang auf dem Boden",
+    "kosten": "2",
+    "warscheinlichkeit": "1",
+    "anzahl": "2",
+    "ziel": "no",
+    "kategorie": "mittel"
+  },
+  {
+    "id": "11",
+    "text": "Lege deinen Finger auf die Stirn deines linken Nachbarn bis du trinken musst. Wenn jemand lacht muss er trinken",
+    "kosten": "2",
+    "warscheinlichkeit": "1",
+    "anzahl": "2",
+    "ziel": "no",
+    "kategorie": "mittel"
+  },
+  {
+    "id": "12",
+    "text": "Jeder mit einer Allergie trinkt",
+    "kosten": "0",
+    "warscheinlichkeit": "1",
+    "anzahl": "1",
+    "ziel": "no",
+    "kategorie": "wenig"
+  },
+  {
+    "id": "13",
+    "text": "Alle Raucher trinken",
+    "kosten": "0",
+    "warscheinlichkeit": "1",
+    "anzahl": "1",
+    "ziel": "no",
+    "kategorie": "wenig"
+  },
+  {
+    "id": "14",
+    "text": "Die letzte Person die einen Fisch imitiert trinkt 2",
+    "kosten": "0",
+    "warscheinlichkeit": "1",
+    "anzahl": "2",
+    "ziel": "no",
+    "kategorie": "wenig"
+  },
+  {
+    "id": "15",
+    "text": "Katzenbesitzer trinken",
+    "kosten": "0",
+    "warscheinlichkeit": "1",
+    "anzahl": "1",
+    "ziel": "no",
+    "kategorie": "wenig"
+  },
+  {
+    "id": "16",
+    "text": "Hundebesitzer trinken",
+    "kosten": "0",
+    "warscheinlichkeit": "1",
+    "anzahl": "1",
+    "ziel": "no",
+    "kategorie": "wenig"
+  },
+  {
+    "id": "17",
+    "text": "Der Besitzer des Handys trinkt",
+    "kosten": "0",
+    "warscheinlichkeit": "1",
+    "anzahl": "1",
+    "ziel": "no",
+    "kategorie": "wenig"
+  },
+  {
+    "id": "18",
+    "text": "Iphone besitzer trinken",
+    "kosten": "0",
+    "warscheinlichkeit": "1",
+    "anzahl": "1",
+    "ziel": "no",
+    "kategorie": "wenig"
+  },
+  {
+    "id": "19",
+    "text": "Game of Thrones Fans trinken, der Rest ist bestraft genug",
+    "kosten": "0",
+    "warscheinlichkeit": "1",
+    "anzahl": "1",
+    "ziel": "no",
+    "kategorie": "wenig"
+  },
+  {
+    "id": "20",
+    "text": "Sag einen Zungenbrecher fehlerfrei",
+    "kosten": "1",
+    "warscheinlichkeit": "1",
+    "anzahl": "1",
+    "ziel": "self",
+    "kategorie": "wenig"
+  },
+  {
+    "id": "21",
+    "text": "Jeder der Morgen früh raus muss, trinkt 3",
+    "kosten": "0",
+    "warscheinlichkeit": "1",
+    "anzahl": "3",
+    "ziel": "no",
+    "kategorie": "viel"
+  },
+  {
+    "id": "22",
+    "text": "Der Gruppen-Freak trinkt",
+    "kosten": "0",
+    "warscheinlichkeit": "1",
+    "anzahl": "1",
+    "ziel": "no",
+    "kategorie": "wenig"
+  },
+  {
+    "id": "23",
+    "text": "Alle mit Piercings trinken",
+    "kosten": "0",
+    "warscheinlichkeit": "1",
+    "anzahl": "1",
+    "ziel": "no",
+    "kategorie": "wenig"
+  },
+  {
+    "id": "24",
+    "text": "Männer(/Frauen) mit Bärten trinken",
+    "kosten": "0",
+    "warscheinlichkeit": "1",
+    "anzahl": "1",
+    "ziel": "no",
+    "kategorie": "wenig"
+  },
+  {
+    "id": "25",
+    "text": "Der mit dem vollsten Glas trinkt 3",
+    "kosten": "0",
+    "warscheinlichkeit": "1",
+    "anzahl": "3",
+    "ziel": "no",
+    "kategorie": "viel"
+  },
+  {
+    "id": "26",
+    "text": "Jeder der sich zu Nüchtern fühlt trinkt 2",
+    "kosten": "0",
+    "warscheinlichkeit": "1",
+    "anzahl": "2",
+    "ziel": "no",
+    "kategorie": "wenig"
+  },
+  {
+    "id": "27",
+    "text": "Alle mit Tattos trinken",
+    "kosten": "0",
+    "warscheinlichkeit": "1",
+    "anzahl": "1",
+    "ziel": "no",
+    "kategorie": "wenig"
+  },
+  {
+    "id": "28",
+    "text": "Der Jüngste trinkt 3",
+    "kosten": "0",
+    "warscheinlichkeit": "1",
+    "anzahl": "3",
+    "ziel": "no",
+    "kategorie": "viel"
+  },
+  {
+    "id": "29",
+    "text": "Der Älteste übernimmt Verantwortung und trinkt 3",
+    "kosten": "0",
+    "warscheinlichkeit": "1",
+    "anzahl": "3",
+    "ziel": "no",
+    "kategorie": "viel"
+  },
+  {
+    "id": "30",
+    "text": "Gestehe deinem linken Nachbarn deine Liebe",
+    "kosten": "2",
+    "warscheinlichkeit": "1",
+    "anzahl": "2",
+    "ziel": "self",
+    "kategorie": "mittel"
+  },
+  {
+    "id": "31",
+    "text": "Mach ein Gruppenfoto und sende es deinen Eltern",
+    "kosten": "4",
+    "warscheinlichkeit": "1",
+    "anzahl": "4",
+    "ziel": "self",
+    "kategorie": "viel"
+  },
+  {
+    "id": "32",
+    "text": "Du und deine Nachbarn trinken",
+    "kosten": "0",
+    "warscheinlichkeit": "1",
+    "anzahl": "1",
+    "ziel": "no",
+    "kategorie": "wenig"
+  },
+  {
+    "id": "33",
+    "text": "Jeder der einen Bruder hat trinkt",
+    "kosten": "0",
+    "warscheinlichkeit": "1",
+    "anzahl": "1",
+    "ziel": "no",
+    "kategorie": "wenig"
+  },
+  {
+    "id": "34",
+    "text": "Jeder mit geradem Alter trinkt",
+    "kosten": "0",
+    "warscheinlichkeit": "1",
+    "anzahl": "1",
+    "ziel": "no",
+    "kategorie": "wenig"
+  },
+  {
+    "id": "35",
+    "text": "Alle mit Brille trinken",
+    "kosten": "0",
+    "warscheinlichkeit": "1",
+    "anzahl": "1",
+    "ziel": "no",
+    "kategorie": "wenig"
+  },
+  {
+    "id": "36",
+    "text": "Flirte mit einem Gegenstand",
+    "kosten": "2",
+    "warscheinlichkeit": "1",
+    "anzahl": "2",
+    "ziel": "self",
+    "kategorie": "mittel"
+  },
+  {
+    "id": "37",
+    "text": "Sprich eine Runde lang Englisch",
+    "kosten": "1",
+    "warscheinlichkeit": "1",
+    "anzahl": "1",
+    "ziel": "self",
+    "kategorie": "wenig"
+  },
+  {
+    "id": "38",
+    "text": "Du entscheidest zwei Personen, die sich gegenseitig einen Kurzen geben",
+    "kosten": "0",
+    "warscheinlichkeit": "1",
+    "anzahl": "1",
+    "ziel": "no",
+    "kategorie": "wenig"
+  },
+  {
+    "id": "39",
+    "text": "Dein linker Nachbar denkt sich einen Spitznamen für dich aus. Jeder der dich falsch anspricht muss trinken",
+    "kosten": "0",
+    "warscheinlichkeit": "1",
+    "anzahl": "1",
+    "ziel": "no",
+    "kategorie": "mittel"
+  },
+  {
+    "id": "40",
+    "text": "Zeige allen das letzte Bild, was du mit deinem Handy gemacht hast",
+    "kosten": "3",
+    "warscheinlichkeit": "1",
+    "anzahl": "3",
+    "ziel": "self",
+    "kategorie": "viel"
+  },
+  {
+    "id": "41",
+    "text": "Rufe jemanden an und frage wie spät es ist",
+    "kosten": "3",
+    "warscheinlichkeit": "1",
+    "anzahl": "3",
+    "ziel": "self",
+    "kategorie": "viel"
+  },
+  {
+    "id": "42",
+    "text": "Sage das Alphabet rückwärts auf",
+    "kosten": "3",
+    "warscheinlichkeit": "1",
+    "anzahl": "3",
+    "ziel": "self",
+    "kategorie": "viel"
+  },
+  {
+    "id": "43",
+    "text": "Sprich eine Runde lang wie ein GaNgStAaH",
+    "kosten": "2",
+    "warscheinlichkeit": "1",
+    "anzahl": "2",
+    "ziel": "self",
+    "kategorie": "mittel"
+  },
+  {
+    "id": "44",
+    "text": "Schau die anderen an und vollende dieses Gedicht: Rosen sind rot, Veilchen sind blau...",
+    "kosten": "2",
+    "warscheinlichkeit": "1",
+    "anzahl": "2",
+    "ziel": "self",
+    "kategorie": "mittel"
+  },
+  {
+    "id": "45",
+    "text": "Erkläre wie ein Frosch aussieht",
+    "kosten": "1",
+    "warscheinlichkeit": "1",
+    "anzahl": "1",
+    "ziel": "self",
+    "kategorie": "wenig"
+  },
+  {
+    "id": "46",
+    "text": "Dein rechter Nachbar macht ein Foto von dir",
+    "kosten": "3",
+    "warscheinlichkeit": "1",
+    "anzahl": "3",
+    "ziel": "self",
+    "kategorie": "viel"
+  },
+  {
+    "id": "47",
+    "text": "Streite dich mit der Wand",
+    "kosten": "2",
+    "warscheinlichkeit": "1",
+    "anzahl": "2",
+    "ziel": "self",
+    "kategorie": "mittel"
+  },
+  {
+    "id": "48",
+    "text": "Trinke soviel wie der Akkustand anzeigt. (100% ganzes Glas)",
+    "kosten": "0",
+    "warscheinlichkeit": "1",
+    "anzahl": "1",
+    "ziel": "self",
+    "kategorie": "mittel"
+  },
+  {
+    "id": "49",
+    "text": "Sieh dir jetzt eine Werbung an",
+    "kosten": "3",
+    "warscheinlichkeit": "1",
+    "anzahl": "3",
+    "ziel": "ad",
+    "kategorie": "viel"
+  },
+  {
+    "id": "50",
+    "text": "Geh auf Klo",
+    "kosten": "1",
+    "warscheinlichkeit": "1",
+    "anzahl": "1",
+    "ziel": "self",
+    "kategorie": "wenig"
+  },
+  {
+    "id": "51",
+    "text": "Stell dich auf ein Bein und rufe Kikeriki",
+    "kosten": "2",
+    "warscheinlichkeit": "1",
+    "anzahl": "2",
+    "ziel": "self",
+    "kategorie": "mittel"
+  },
+  {
+    "id": "52",
+    "text": "Stelle deinem rechten Nachbarn das Klo vor (Name, Alter, Herkunft)",
+    "kosten": "2",
+    "warscheinlichkeit": "1",
+    "anzahl": "2",
+    "ziel": "self",
+    "kategorie": "mittel"
+  },
+  {
+    "id": "53",
+    "text": "Alle ohne Brille trinken",
+    "kosten": "0",
+    "warscheinlichkeit": "1",
+    "anzahl": "1",
+    "ziel": "no",
+    "kategorie": "wenig"
+  },
+  {
+    "id": "54",
+    "text": "Jeder der keine 10 Euro hat trinkt",
+    "kosten": "0",
+    "warscheinlichkeit": "1",
+    "anzahl": "1",
+    "ziel": "no",
+    "kategorie": "wenig"
+  },
+  {
+    "id": "55",
+    "text": "Trinke und dein linker Nachbar darf einen verteilen",
+    "kosten": "0",
+    "warscheinlichkeit": "1",
+    "anzahl": "1",
+    "ziel": "self",
+    "kategorie": "wenig"
+  },
+  {
+    "id": "56",
+    "text": "Alle unter 21 trinken 2",
+    "kosten": "0",
+    "warscheinlichkeit": "1",
+    "anzahl": "2",
+    "ziel": "no",
+    "kategorie": "mittel"
+  },
+  {
+    "id": "57",
+    "text": "Jeder mit ungeraden Alter trinkt",
+    "kosten": "0",
+    "warscheinlichkeit": "1",
+    "anzahl": "1",
+    "ziel": "no",
+    "kategorie": "wenig"
+  },
+  {
+    "id": "58",
+    "text": "Jeder der eine Schwester hat trinkt",
+    "kosten": "0",
+    "warscheinlichkeit": "1",
+    "anzahl": "1",
+    "ziel": "no",
+    "kategorie": "wenig"
+  },
+  {
+    "id": "59",
+    "text": "Erzähle einen Witz. Wer lacht trinkt. Lacht keiner, trinkst du 3",
+    "kosten": "0",
+    "warscheinlichkeit": "1",
+    "anzahl": "3",
+    "ziel": "no",
+    "kategorie": "mittel"
+  },
+  {
+    "id": "60",
+    "text": "Rufe jemanden an und gesteh ihm/ihr deine Liebe",
+    "kosten": "3",
+    "warscheinlichkeit": "1",
+    "anzahl": "3",
+    "ziel": "self",
+    "kategorie": "viel"
+  },
+  {
+    "id": "61",
+    "text": "Nenne 15 Biermarken in einer Minute",
+    "kosten": "2",
+    "warscheinlichkeit": "1",
+    "anzahl": "2",
+    "ziel": "self",
+    "kategorie": "mittel"
+  },
+  {
+    "id": "62",
+    "text": "Alle Singles trinken einen",
+    "kosten": "0",
+    "warscheinlichkeit": "1",
+    "anzahl": "1",
+    "ziel": "no",
+    "kategorie": "wenig"
+  },
+  {
+    "id": "63",
+    "text": "Entscheide wer trinkt",
+    "kosten": "0",
+    "warscheinlichkeit": "1",
+    "anzahl": "1",
+    "ziel": "no",
+    "kategorie": "wenig"
+  },
+  {
+    "id": "64",
+    "text": "Erzähle ein Liebesgedicht",
+    "kosten": "2",
+    "warscheinlichkeit": "1",
+    "anzahl": "2",
+    "ziel": "self",
+    "kategorie": "wenig"
+  },
+  {
+    "id": "65",
+    "text": "Verbiete ein Wort",
+    "kosten": "0",
+    "warscheinlichkeit": "1",
+    "anzahl": "0",
+    "ziel": "no",
+    "kategorie": "mittel"
+  },
+  {
+    "id": "66",
+    "text": "Du bist jetzt der König. Wer dich anspricht muss trinken",
+    "kosten": "0",
+    "warscheinlichkeit": "1",
+    "anzahl": "1",
+    "ziel": "no",
+    "kategorie": "mittel"
+  },
+  {
+    "id": "67",
+    "text": "Die Person mit dem längsten Nachnamen trinkt",
+    "kosten": "0",
+    "warscheinlichkeit": "1",
+    "anzahl": "1",
+    "ziel": "no",
+    "kategorie": "wenig"
+  },
+  {
+    "id": "68",
+    "text": "Die Person, die am nächsten am Ausgang sitzt trinkt 2",
+    "kosten": "0",
+    "warscheinlichkeit": "1",
+    "anzahl": "2",
+    "ziel": "no",
+    "kategorie": "mittel"
+  },
+  {
+    "id": "69",
+    "text": "Jeder ausser dir trinkt",
+    "kosten": "0",
+    "warscheinlichkeit": "1",
+    "anzahl": "1",
+    "ziel": "no",
+    "kategorie": "wenig"
+  },
+  {
+    "id": "70",
+    "text": "Nenne 10 Wörter die mit x enden in einer Minute",
+    "kosten": "3",
+    "warscheinlichkeit": "1",
+    "anzahl": "1",
+    "ziel": "self",
+    "kategorie": "viel"
+  },
+  {
+    "id": "71",
+    "text": "Jeder mit einem A im Namen trinkt",
+    "kosten": "0",
+    "warscheinlichkeit": "1",
+    "anzahl": "1",
+    "ziel": "no",
+    "kategorie": "wenig"
+  },
+  {
+    "id": "72",
+    "text": "Der Jüngste trinkt",
+    "kosten": "0",
+    "warscheinlichkeit": "1",
+    "anzahl": "1",
+    "ziel": "no",
+    "kategorie": "wenig"
+  },
+  {
+    "id": "73",
+    "text": "Trinke 2 mal",
+    "kosten": "0",
+    "warscheinlichkeit": "5",
+    "anzahl": "2",
+    "ziel": "self",
+    "kategorie": "mittel"
+  },
+  {
+    "id": "74",
+    "text": "Trinke 3 mal",
+    "kosten": "0",
+    "warscheinlichkeit": "2",
+    "anzahl": "3",
+    "ziel": "self",
+    "kategorie": "viel"
+  },
+  {
+    "id": "75",
+    "text": "Tanze mit deinem linken Nachbarn",
+    "kosten": "2",
+    "warscheinlichkeit": "1",
+    "anzahl": "0",
+    "ziel": "self",
+    "kategorie": "mittel"
+  },
+  {
+    "id": "76",
+    "text": "Schreibe ein kurzes Gedicht",
+    "kosten": "2",
+    "warscheinlichkeit": "1",
+    "anzahl": "0",
+    "ziel": "self",
+    "kategorie": "mittel"
+  },
+  {
+    "id": "77",
+    "text": "Imitiere jemanden",
+    "kosten": "1",
+    "warscheinlichkeit": "1",
+    "anzahl": "0",
+    "ziel": "self",
+    "kategorie": "wenig"
+  },
+  {
+    "id": "78",
+    "text": "Dein rechter Nachbar verpasst dir eine Ohrfeige",
+    "kosten": "3",
+    "warscheinlichkeit": "1",
+    "anzahl": "0",
+    "ziel": "self",
+    "kategorie": "viel"
+  },
+  {
+    "id": "79",
+    "text": "Denk dir eine eigene Regel aus",
+    "kosten": "0",
+    "warscheinlichkeit": "1",
+    "anzahl": "0",
+    "ziel": "self",
+    "kategorie": "mittel"
+  },
+  {
+    "id": "80",
+    "text": "Alle trinken 1 mal",
+    "kosten": "0",
+    "warscheinlichkeit": "1",
+    "anzahl": "1",
+    "ziel": "all",
+    "kategorie": "wenig"
+  },
+  {
+    "id": "81",
+    "text": "Alle trinken 2 mal",
+    "kosten": "0",
+    "warscheinlichkeit": "1",
+    "anzahl": "2",
+    "ziel": "all",
+    "kategorie": "mittel"
+  },
+  {
+    "id": "82",
+    "text": "Tausche den Platz mit deinem rechten Nachbarn",
+    "kosten": "0",
+    "warscheinlichkeit": "1",
+    "anzahl": "0",
+    "ziel": "switchPlaceRight",
+    "kategorie": "wenig"
+  },
+  {
+    "id": "83",
+    "text": "Tausche den Platz mit deinem linken Nachbarn",
+    "kosten": "0",
+    "warscheinlichkeit": "1",
+    "anzahl": "0",
+    "ziel": "switchPlaceLeft",
+    "kategorie": "wenig"
+  },
+  {
+    "id": "84",
+    "text": "Alle trinken 3 mal",
+    "kosten": "0",
+    "warscheinlichkeit": "1",
+    "anzahl": "3",
+    "ziel": "all",
+    "kategorie": "viel"
+  },
+  {
+    "id": "85",
+    "text": "Gib deinem rechten Nachbarn eine Massage",
+    "kosten": "3",
+    "warscheinlichkeit": "1",
+    "anzahl": "0",
+    "ziel": "self",
+    "kategorie": "viel"
+  },
+  {
+    "id": "86",
+    "text": "Dein linker Nachbar liest deine letzten drei Nachrichten vor",
+    "kosten": "3",
+    "warscheinlichkeit": "1",
+    "anzahl": "0",
+    "ziel": "self",
+    "kategorie": "viel"
+  },
+  {
+    "id": "87",
+    "text": "Der Spieler, der am wenigsten getrunken hat, trinkt",
+    "kosten": "0",
+    "warscheinlichkeit": "1",
+    "anzahl": "1",
+    "ziel": "low",
+    "kategorie": "wenig"
+  },
+  {
+    "id": "88",
+    "text": "Dein linker Nachbar trinkt",
+    "kosten": "0",
+    "warscheinlichkeit": "1",
+    "anzahl": "1",
+    "ziel": "no",
+    "kategorie": "wenig"
+  },
+  {
+    "id": "89",
+    "text": "Stehe bis du wieder dran bist auf einem Bein",
+    "kosten": "2",
+    "warscheinlichkeit": "1",
+    "anzahl": "1",
+    "ziel": "self",
+    "kategorie": "mittel"
+  },
+  {
+    "id": "90",
+    "text": "Dein rechter Nachbar trinkt",
+    "kosten": "0",
+    "warscheinlichkeit": "1",
+    "anzahl": "1",
+    "ziel": "no",
+    "kategorie": "wenig"
+  },
+  {
+    "id": "91",
+    "text": "Der Spieler, der am meisten getrunken hat, trinkt",
+    "kosten": "0",
+    "warscheinlichkeit": "1",
+    "anzahl": "1",
+    "ziel": "high",
+    "kategorie": "wenig"
+  },
+  {
+    "id": "92",
+    "text": "Trinke ein Glas Wasser",
+    "kosten": "1",
+    "warscheinlichkeit": "1",
+    "anzahl": "0",
+    "ziel": "self",
+    "kategorie": "wenig"
+  },
+  {
+    "id": "93",
+    "text": "Ziehe ein Kleidungsstück aus",
+    "kosten": "2",
+    "warscheinlichkeit": "1",
+    "anzahl": "0",
+    "ziel": "self",
+    "kategorie": "mittel"
+  },
+  {
+    "id": "94",
+    "text": "Trinke nichts",
+    "kosten": "1",
+    "warscheinlichkeit": "1",
+    "anzahl": "1",
+    "ziel": "self",
+    "kategorie": "wenig"
+  },
+  {
+    "id": "95",
+    "text": "Dein linker Nachbar malt dir etwas auf deine Hand",
+    "kosten": "2",
+    "warscheinlichkeit": "1",
+    "anzahl": "0",
+    "ziel": "self",
+    "kategorie": "mittel"
+  },
+  {
+    "id": "96",
+    "text": "Dein linker Nachbar kneift dich",
+    "kosten": "2",
+    "warscheinlichkeit": "1",
+    "anzahl": "0",
+    "ziel": "self",
+    "kategorie": "mittel"
+  },
+  {
+    "id": "97",
+    "text": "Stelle ein Glas in die Mitte und fülle es mit 2cl eines beliebigen Getränks",
+    "kosten": "0",
+    "warscheinlichkeit": "3",
+    "anzahl": "0",
+    "ziel": "self",
+    "kategorie": "wenig"
+  },
+  {
+    "id": "98",
+    "text": "Leere das Glas in der Mitte und fülle 2cl eines beliebigen Getränks ein",
+    "kosten": "0",
+    "warscheinlichkeit": "1",
+    "anzahl": "1",
+    "ziel": "self",
+    "kategorie": "viel"
+  },
+  {
+    "id": "99",
+    "text": "Alle Männer trinken",
+    "kosten": "0",
+    "warscheinlichkeit": "1",
+    "anzahl": "1",
+    "ziel": "men",
+    "kategorie": "wenig"
+  },
+  {
+    "id": "100",
+    "text": "Arbeitslose trinken",
+    "kosten": "0",
+    "warscheinlichkeit": "1",
+    "anzahl": "1",
+    "ziel": "no",
+    "kategorie": "wenig"
+  },
+  {
+    "id": "101",
+    "text": "Alle Frauen trinken",
+    "kosten": "0",
+    "warscheinlichkeit": "1",
+    "anzahl": "1",
+    "ziel": "women",
+    "kategorie": "wenig"
+  },
+  {
+    "id": "102",
+    "text": "Wenn du es schaffst dein Glas zu exen darfst du 5 verteilen",
+    "kosten": "3",
+    "warscheinlichkeit": "1",
+    "anzahl": "1",
+    "ziel": "self",
+    "kategorie": "viel"
+  },
+  {
+    "id": "103",
+    "text": "Alle Frauen ziehen ein Kleidungsstück aus oder trinken 3",
+    "kosten": "0",
+    "warscheinlichkeit": "1",
+    "anzahl": "3",
+    "ziel": "no",
+    "kategorie": "viel"
+  },
+  {
+    "id": "104",
+    "text": "Alle Männer ziehen ein Kleidungsstück aus oder trinken 2",
+    "kosten": "0",
+    "warscheinlichkeit": "1",
+    "anzahl": "2",
+    "ziel": "no",
+    "kategorie": "mittel"
+  },
+  {
+    "id": "105",
+    "text": "Knutsche mit deinem rechten Nachbarn rum",
+    "kosten": "3",
+    "warscheinlichkeit": "1",
+    "anzahl": "0",
+    "ziel": "self",
+    "kategorie": "viel"
+  },
+  {
+    "id": "106",
+    "text": "Spiele mit dem Ohrläppchen von deinem linken Nachbarn",
+    "kosten": "2",
+    "warscheinlichkeit": "1",
+    "anzahl": "0",
+    "ziel": "self",
+    "kategorie": "mittel"
+  },
+  {
+    "id": "107",
+    "text": "Dein linker Nachbarn schreibt deinen Status bei Facebook",
+    "kosten": "3",
+    "warscheinlichkeit": "1",
+    "anzahl": "0",
+    "ziel": "self",
+    "kategorie": "viel"
+  },
+  {
+    "id": "108",
+    "text": "Macht ein Gruppenfoto, wer nicht mit macht trinkt 3",
+    "kosten": "3",
+    "warscheinlichkeit": "1",
+    "anzahl": "0",
+    "ziel": "self",
+    "kategorie": "viel"
+  },
+  {
+    "id": "109",
+    "text": "Zeig deinen nackten Hintern",
+    "kosten": "3",
+    "warscheinlichkeit": "1",
+    "anzahl": "0",
+    "ziel": "self",
+    "kategorie": "viel"
+  },
+  {
+    "id": "110",
+    "text": "Zeig deine Brüste",
+    "kosten": "3",
+    "warscheinlichkeit": "1",
+    "anzahl": "0",
+    "ziel": "self",
+    "kategorie": "viel"
+  },
+  {
+    "id": "111",
+    "text": "Stell deinen Wecker auf 5 Uhr",
+    "kosten": "5",
+    "warscheinlichkeit": "1",
+    "anzahl": "0",
+    "ziel": "self",
+    "kategorie": "viel"
+  },
+  {
+    "id": "112",
+    "text": "Ziehe alle Jacken an",
+    "kosten": "2",
+    "warscheinlichkeit": "1",
+    "anzahl": "0",
+    "ziel": "self",
+    "kategorie": "mittel"
+  },
+  {
+    "id": "113",
+    "text": "Spiele Luftgittare",
+    "kosten": "2",
+    "warscheinlichkeit": "1",
+    "anzahl": "2",
+    "ziel": "self",
+    "kategorie": "wenig"
+  },
+  {
+    "id": "114",
+    "text": "Die anderen Spieler bestimmen einen Schnaps für dich",
+    "kosten": "3",
+    "warscheinlichkeit": "1",
+    "anzahl": "1",
+    "ziel": "self",
+    "kategorie": "viel"
+  },
+  {
+    "id": "115",
+    "text": "Tausche ein Kleidungsstück mit deinem linken Nachbarn",
+    "kosten": "3",
+    "warscheinlichkeit": "1",
+    "anzahl": "0",
+    "ziel": "self",
+    "kategorie": "viel"
+  },
+  {
+    "id": "116",
+    "text": "Halte einen Vortrag",
+    "kosten": "1",
+    "warscheinlichkeit": "1",
+    "anzahl": "0",
+    "ziel": "self",
+    "kategorie": "wenig"
+  },
+  {
+    "id": "117",
+    "text": "Mache 10 liegestützen",
+    "kosten": "2",
+    "warscheinlichkeit": "1",
+    "anzahl": "0",
+    "ziel": "self",
+    "kategorie": "wenig"
+  },
+  {
+    "id": "118",
+    "text": "Stelle ein Glas in die Mitte und fülle es mit 2cl eines beliebigen Getränks",
+    "kosten": "0",
+    "warscheinlichkeit": "3",
+    "anzahl": "0",
+    "ziel": "self",
+    "kategorie": "wenig"
+  },
+  {
+    "id": "119",
+    "text": "Stelle ein Glas in die Mitte und fülle es mit 2cl eines beliebigen Getränks",
+    "kosten": "0",
+    "warscheinlichkeit": "3",
+    "anzahl": "0",
+    "ziel": "self",
+    "kategorie": "wenig"
+  },
+  {
+    "id": "120",
+    "text": "Stelle ein Glas in die Mitte und fülle es mit 2cl eines beliebigen Getränks",
+    "kosten": "0",
+    "warscheinlichkeit": "3",
+    "anzahl": "0",
+    "ziel": "self",
+    "kategorie": "wenig"
+  },
+  {
+    "id": "121",
+    "text": "Stelle ein Glas in die Mitte und fülle es mit 2cl eines beliebigen Getränks",
+    "kosten": "0",
+    "warscheinlichkeit": "3",
+    "anzahl": "0",
+    "ziel": "self",
+    "kategorie": "wenig"
+  },
+  {
+    "id": "122",
+    "text": "Jeder, der das Spiel nicht installiert hat trinkt 2",
+    "kosten": "0",
+    "warscheinlichkeit": "2",
+    "anzahl": "0",
+    "ziel": "self",
+    "kategorie": "mittel"
+  },
+  {
+    "id": "123",
+    "text": "Der letzte der Hans schreit trinkt 2",
+    "kosten": "0",
+    "warscheinlichkeit": "2",
+    "anzahl": "0",
+    "ziel": "self",
+    "kategorie": "mittel"
+  },
+  {
+    "id": "124",
+    "text": "Ruf deine Eltern an",
+    "kosten": "3",
+    "warscheinlichkeit": "1",
+    "anzahl": "3",
+    "ziel": "self",
+    "kategorie": "viel"
+  }
+]

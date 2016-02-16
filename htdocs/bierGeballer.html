@@ -1,0 +1,370 @@
+﻿<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>Biergeballer</title>
+    <script type="text/javascript" src="js/phaser.min.js"></script>
+    <script type="text/javascript" charset="utf-8" src="cordova.js"></script>
+    <style type="text/css">
+        body {
+            margin: 0;
+        }
+    </style>
+</head>
+<body>
+    <script type="text/javascript">
+        //control
+        var w = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
+        var h = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight
+        var game = new Phaser.Game(w, h, Phaser.AUTO, '', { preload: preload, create: create, update: update });
+        var fromMainGame = 0;
+        var fontsize = h / 16;
+        var language = '';
+        var texts;
+        var gamestate = 0;
+        var isSmartphone = false;
+
+        var crateLeftKoords = { x: 0, y: h / 2 };
+        var crateRightKoords = { x: w, y: h / 2 };
+        var heartPositions = { player0: [{ x: w / 2, y: 0 }, { x: w / 2, y: 0 }, { x: w / 2, y: 0 }], player1: [{ x: w / 2, y: h }, { x: w / 2, y: h }, { x: w / 2, y: h }] }
+
+        //Beer spawn and flight
+        var beerCounter = [0, 0];
+        var beerLimit = [3000, 3000];
+        var beerspeedfaktor = 0.3;
+        var speedIncreaseCounter = 0;
+        var speedIncreaseLimit = 6000;
+        var maxBeerLimit = 650;     //Je kleiner umso schneller spawnen biere
+
+        var beers = { player0: [], player1: [] };
+
+        //Images
+        var popup;
+
+        //Texte
+        var popupText;
+
+        //PLayer
+        var player = [];
+        var currPlayer;
+        var actualPlayer = [{ id: 0, player: {}, crate: {}, hearts: [] }, { id: 0, player: {}, crate: {}, hearts: [] }];
+
+        document.addEventListener("deviceready", onDeviceReady, false);
+
+        function onDeviceReady() {
+            window.plugins.insomnia.keepAwake();
+            isSmartphone = true;
+        }
+
+        function loadLanguage() {
+            language = localStorage.getItem('language');
+            fromMainGame = localStorage.getItem('kastriert');
+            if (language == 'de-DE') {
+                game.load.json('texts', 'assets/Daten/Languages/bierGeballer/german.json');
+            }
+            else {
+                game.load.json('texts', 'assets/Daten/Languages/bierGeballer/english.json');
+            }
+        }
+
+        function preload() {
+            //Daten
+            loadLanguage();
+            if (fromMainGame == 1) {
+                playerCount = parseInt(localStorage.getItem('playercount'), 10);
+                for (var i = 0; i < playerCount; i++) {
+                    player.push({ name: localStorage.getItem('playername' + i), drinkcount: localStorage.getItem('playerdrinks' + i) })
+                }
+                currPlayer = parseInt(localStorage.getItem('currPlayer'), 10);
+                actualPlayer[0].player = player[currPlayer];
+                actualPlayer[0].id = currPlayer;
+
+                if (currPlayer + 1 >= playerCount) {
+                    actualPlayer[1].player = player[0];
+                    actualPlayer[1].id = 0;
+                }
+                else {
+                    actualPlayer[1].player = player[currPlayer + 1];
+                    actualPlayer[1].id = currPlayer + 1;
+                }
+            }
+
+            game.load.image('background', 'assets/Hintergruende/Himmel.png');
+            game.load.image('crate', 'assets/GUI/KistenStapeln/Bierkiste.png');
+            game.load.image('beer', 'assets/GUI/SlotMachine/Bierglas2.png');
+            game.load.image('heart', 'assets/GUI/Biergeballer/Leben.png');
+            game.load.image('popup', 'assets/GUI/PopUp/PopUp400x300.png');
+        }
+
+        function create() {
+            texts = game.cache.getJSON('texts');
+            if (fromMainGame == 0) {
+                currPlayer = 0;
+                actualPlayer[0].player = { name: texts[1], drinkcount: 0 };
+                actualPlayer[1].player = { name: texts[2], drinkcount: 0 };
+                actualPlayer[0].id = 0;
+                actualPlayer[1].id = 1;
+            }
+            var fontstyle = { font: '150% Arial', fill: '#000', align: 'center', wordWrap: 'true', wordWrapWidth: w / 1.5 };
+            var background = game.add.image(0, 0, 'background');
+            background.width = w;
+            background.height = h;
+
+            var debugLine = game.add.image(w / 2, 0, 'beer');
+            debugLine.height = h;
+            debugLine.width = 1;
+
+            var crate0 = game.add.image(crateLeftKoords.x, crateLeftKoords.y, 'crate');
+            crate0.width = w / 10;
+            crate0.height = h / 10;
+            crate0.rotation = Math.PI / 2;
+            crate0.x += crate0.width / 4;
+            crate0.anchor.set(0.5);
+
+            var crate1 = game.add.image(crateRightKoords.x, crateRightKoords.y, 'crate');
+            crate1.width = crate0.width;
+            crate1.height = crate0.height;
+            crate1.rotation = -Math.PI / 2;
+            crate1.x -= crate1.width / 4;
+            crate1.anchor.set(0.5);
+
+            actualPlayer[0].crate = crate0;
+            actualPlayer[1].crate = crate1;
+
+            for (var j = 0; j < 2; j++) {
+                for (var i = 0; i < 3; i++) {
+                    var heart;
+                    if (j == 0) {
+                        heart = game.add.image(heartPositions.player0[i].x, heartPositions.player0[i].y, 'heart');
+                        heart.rotation = Math.PI / 2;
+                    }
+                    else {
+                        heart = game.add.image(heartPositions.player1[i].x, heartPositions.player1[i].y, 'heart');
+                        heart.rotation = -Math.PI / 2;
+                    }
+                    heart.width = w / 30;
+                    heart.height = h / 15;
+                    heart.anchor.set(0.5);
+                    if (j == 0) {
+                        heart.y += heart.width / 2 + (heart.width * i);
+                        heart.x -= heart.height / 2;
+                    }
+                    else {
+                        heart.y -= heart.width / 2 + (heart.width * i);
+                        heart.x += heart.height / 2;
+                    }
+                    actualPlayer[j].hearts.push(heart);
+                }
+            }
+
+            popup = game.add.image(w / 2, h / 2, 'popup');
+            popup.width = w / 1.5;
+            popup.height = h / 1.5;
+            popup.anchor.set(0.5);
+
+            popupText = game.add.text(popup.x, popup.y, '<- ' + actualPlayer[0].player.name + "   vs   " + actualPlayer[1].player.name + " ->");
+            popupText.anchor.set(0.5);
+            //game.input.addPointer();
+            game.input.onDown.addOnce(startGame);
+        }
+
+        function startGame() {
+            popup.visible = false;
+            popupText.visible = false;
+            popup.destroy();
+            popupText.destroy();
+            gamestate = 1;
+        }
+
+        function endGame(looserNumber) {
+            gamestate = 2;
+            var winnerNumber;
+            if (looserNumber == 0) {
+                winnerNumber = 1;
+            }
+            else {
+                winnerNumber = 0;
+            }
+            popup = game.add.image(w / 2, h / 2, 'popup');
+            popup.anchor.set(0.5);
+            popupText = game.add.text(popup.x, popup.y, actualPlayer[looserNumber].player.name + texts[0] + actualPlayer[winnerNumber].hearts.length);
+            popupText.anchor.set(0.5);
+            popup.width = w / 1.5;
+            popup.height = h / 1.5;
+            popup.visible = true;
+            popupText.visible = true;
+            game.input.onDown.addOnce(exit);
+        }
+
+        function spawnBeer(crate, playerNumber) {
+            var beer = game.add.image(crate.x, crate.y, 'beer');
+            beer.width = crate.width / 6;
+            beer.height = crate.height / 1.5;
+            beer.anchor.set(0.5);
+            beer.rotation = crate.rotation;
+
+
+
+            if (playerNumber == 0) {
+                beers.player0.push({ image: beer, lastX: beer.x, lastY: beer.y });
+            }
+            else {
+                beers.player1.push({ image: beer, lastX: beer.x, lastY: beer.y });
+            }
+        }
+
+        function removeHeart(playerNumber) {
+            var currHeart = actualPlayer[playerNumber].hearts.pop();
+            currHeart.destroy();
+            if (actualPlayer[playerNumber].hearts.length < 1) {
+                endGame(playerNumber);
+            }
+        }
+
+        function exit() {
+            if (fromMainGame == 1) {
+                var currPlayer = localStorage.getItem('currPlayer');
+                currPlayer++;
+                localStorage.setItem('currPlayer', actualPlayer[1].id);
+
+                var drinkcount0 = parseInt(actualPlayer[0].player.drinkcount, 10) + actualPlayer[1].hearts.length;
+                var drinkcount1 = parseInt(actualPlayer[1].player.drinkcount, 10) + actualPlayer[0].hearts.length;
+
+                localStorage.setItem('playerdrinks' + actualPlayer[0].id, drinkcount0);
+                localStorage.setItem('playerdrinks' + actualPlayer[1].id, drinkcount1);
+
+                document.location.href = 'mainGame.html';
+            }
+            else {
+                document.location.href = "miniSpielWaehlen.html";
+            }
+        }
+
+        function increaseSpeed() {
+            if (beerLimit[0] > maxBeerLimit) {
+                beerLimit[0] -= beerLimit[0] / 3;
+            }
+            else {
+                console.log("limit erreicht");
+            }
+            if (beerLimit[1] > maxBeerLimit) {
+                beerLimit[1] -= beerLimit[1] / 3;
+            }
+            beerspeedfaktor += 0.05
+            speedIncreaseLimit += 800;
+        }
+
+        function update() {
+
+            if (gamestate == 1) {
+                speedIncreaseCounter += game.time.elapsed;
+                if (speedIncreaseCounter > speedIncreaseLimit) {
+                    speedIncreaseCounter = 0;
+                    increaseSpeed();
+                }
+
+                //Courser ermittlung
+                var leftPosition = { x: -1, y: -1 };
+                var rightPosition = { x: -1, y: -1 };
+
+                if (game.input.mousePointer.isDown) {
+                    console.log(game.input.mousePointer.worldX);
+                    if (game.input.mousePointer.worldX < w/2) {
+                        leftPosition = { x: game.input.mousePointer.worldX, y: game.input.mousePointer.worldY };
+                    }
+                    else {
+                        rightPosition = { x: game.input.mousePointer.worldX, y: game.input.mousePointer.worldY };
+                    }
+                }
+                if (game.input.pointer1.isDown) {
+                    if (game.input.pointer1.worldX < w/2) {
+                        leftPosition = { x: game.input.pointer1.worldX, y: game.input.pointer1.worldY };
+                    }
+                    else {
+                        rightPosition = { x: game.input.pointer1.worldX, y: game.input.pointer1.worldY };
+                    }
+                }
+                if (game.input.pointer2.isDown) {
+                    if (game.input.pointer2.worldX < w/2) {
+                        leftPosition = { x: game.input.pointer2.worldX, y: game.input.pointer2.worldY };
+                    }
+                    else {
+                        rightPosition = { x: game.input.pointer2.worldX, y: game.input.pointer2.worldY };
+                    }
+                }
+               
+
+                //Kistenbewegung
+                if (rightPosition != null && rightPosition.x != -1) {
+                    actualPlayer[1].crate.y = rightPosition.y;
+                }
+                if (leftPosition != null && leftPosition.x != -1) {
+                    actualPlayer[0].crate.y = leftPosition.y;
+                }
+
+                //Biere spawnen
+                for (var i = 0; i < 2; i++) {
+                    beerCounter[i] += game.time.elapsed;
+                    if (beerCounter[i] > beerLimit[i]) {
+                        beerCounter[i] = 0;
+                        spawnBeer(actualPlayer[i].crate, i);
+                    }
+                }
+
+                //Biere bewegen
+                for (var i = 0; i < beers.player0.length; i++) {
+                    var arrayPosition = beers.player0[i];
+                    var beer = beers.player0[i].image;
+                    var targetCrate = actualPlayer[1].crate;
+                    arrayPosition.lastX = beer.x;
+                    beer.x += game.time.elapsed * beerspeedfaktor;
+                    
+                    if (beer.x > w - targetCrate.height) {
+                        if (beer.y > (targetCrate.y - targetCrate.width / 2) && beer.y < (targetCrate.y + targetCrate.width / 2)) {
+                            var array = beers.player0.slice(0, i).concat(beers.player0.slice(i + 1));
+                            beers.player0 = array;
+                            beer.visible = false;
+                            beer.destroy();
+                        }
+                    }
+                    if (beer.x > w * 1.1) {
+                        if (beer.x - arrayPosition.lastX <  targetCrate.height) {
+                            var array = beers.player0.slice(0, i).concat(beers.player0.slice(i + 1));
+                            beers.player0 = array;
+                            beer.visible = false;
+                            beer.destroy();
+                            removeHeart(1);
+                        }
+                    }
+                }
+                for (var i = 0; i < beers.player1.length; i++) {
+                    var arrayPosition = beers.player1[i];
+                    var beer = beers.player1[i].image;
+                    var targetCrate = actualPlayer[0].crate;
+                    arrayPosition.lastX = beer.x;
+                    beer.x -= game.time.elapsed * beerspeedfaktor;
+                    if (beer.x < targetCrate.height) {
+                        if (beer.y > (targetCrate.y - targetCrate.width / 2) && beer.y < (targetCrate.y + targetCrate.width / 2)) {
+                            var array = beers.player1.slice(0, i).concat(beers.player1.slice(i + 1));
+                            beers.player1 = array;
+                            beer.visible = false;
+                            beer.destroy();
+                        }
+                    }
+                    if (beer.x < w - w * 1.1) {
+                        if (arrayPosition.lastX - beer.x < targetCrate.height) {
+                            var array = beers.player1.slice(0, i).concat(beers.player1.slice(i + 1));
+                            beers.player1 = array;
+                            beer.visible = false;
+                            beer.destroy();
+                            removeHeart(0);
+                        }
+                    }
+                }
+            }
+        }
+
+    </script>
+
+</body>
+</html>

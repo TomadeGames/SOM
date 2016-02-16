@@ -1,0 +1,17 @@
+﻿[
+	{
+	"text":"Looping Louie",
+	"anleitung":"Spielt eine Runde Looping Louie. Jedoch jedes mal wenn ein Chip herunterfällt muss der Spieler einen trinken",
+	"benoetigt":"loopingLouie"
+	},
+	{
+	"text":"Flunkyball",
+	"anleitung":"https://www.spielwiki.de/Flunkyball",
+	"benoetigt":"ball"
+	},
+	{
+	"text":"Meiern",
+	"anleitung":"http://de.wikipedia.org/wiki/Meiern",
+	"benoetigt":"wuerfel"
+	}
+]

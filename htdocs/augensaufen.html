@@ -1,0 +1,198 @@
+﻿<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>Augensaufen</title>
+    <script type="text/javascript" src="js/phaser.min.js"></script>
+    <script type="text/javascript" src="js/files.js"></script>
+    <script type="text/javascript" src="js/sounds.js"></script>
+    <script type="text/javascript" charset="utf-8" src="cordova.js"></script>
+    <style type="text/css">
+        body {
+            margin: 0;
+        }
+    </style>
+</head>
+<body>
+
+    <script type="text/javascript">
+        var w = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
+        var h = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight
+        var game = new Phaser.Game(w, h, Phaser.AUTO, '', { preload: preload, create: create, update: update });
+        var startText;
+        var currPlayerText;
+        var drinkCounter = [];
+        var popup;
+        var dice;
+        var currPlayer = localStorage.getItem('currPlayer');
+        var player = [];
+        var shufflecount = 0;
+        var playerCount = 0;
+        var animationCounter = 0;
+        var fromMainGame = 0;
+        var language;
+        var texts;
+        var fontsize = h / 16;
+
+        var isShuffeling = false;
+        var shuffleSpeed = 0.8;
+
+        document.addEventListener("deviceready", onDeviceReady, false);
+
+        function onDeviceReady() {
+            document.addEventListener("backbutton", onBackKeyDown, false);
+            window.plugins.insomnia.keepAwake();
+            isSmartphone = true;
+        }
+
+        function loadLanguage() {
+            language = localStorage.getItem('language');
+            fromMainGame = localStorage.getItem('kastriert');
+            if (language == 'de') {
+                game.load.json('texts', 'assets/Daten/Languages/augensaufen/german.json');
+            }
+            else {
+                game.load.json('texts', 'assets/Daten/Languages/augensaufen/english.json');
+            }
+        }
+
+        function preload() {
+            //Daten
+            loadLanguage();
+            playerCount = parseInt(localStorage.getItem('playercount'), 10);
+            for (var i = 0; i < playerCount; i++) {
+                player.push({ name: localStorage.getItem('playername' + i), drinkcount: Math.floor(localStorage.getItem('playerdrinks' + i)) })
+            }
+
+            game.load.image('background', 'assets/Hintergruende/Tepich.png');
+            game.load.image('PopUp200x150', 'assets/GUI/PopUp/PopUp200x150.png');
+            game.load.image('PopUp', 'assets/GUI/PopUp/PopUp400x300.png');
+            game.load.spritesheet('dice', 'assets/Wuerfel/Dice.png', 64, 64);
+            game.load.image('exit', 'assets/GUI/Button/NoButton.png');
+        }
+
+        function create() {
+            texts = game.cache.getJSON('texts');
+            var fontstyle = { font: '150% Arial', fill: '#000', align: 'center', wordWrap: 'true', wordWrapWidth: w / 1.5 };
+
+            var bg = game.add.sprite(0, 0, 'background');
+            bg.width = game.width;
+            bg.height = game.height;
+
+            popup = game.add.sprite(w / 2, h / 2.6, 'PopUp');
+            popup.width = game.width / 1.6;
+            popup.height = game.height / 2;
+            popup.anchor.setTo(0.5, 0.5);
+
+            if (fromMainGame == 1) {
+                drink_label = game.add.text(w - w / 50, h - h / 1.05, '1/' + playerCount, { font: '200% Arial', fill: '#fff', align: 'center' });
+                drink_label.anchor.set(1, 0);
+                drink_label.fontSize = fontsize;
+            }
+
+            else {
+                exit = game.add.button(w - w / 10, h - h / 1.1, 'exit', exit, this, 2, 1, 0);
+                exit.width = w / 6;
+                exit.height = exit.width / 250 * 90;
+                exit.anchor.set(0.5);
+
+                exitText = game.add.text(exit.x, exit.y, texts[3], { font: '200% Arial', fill: '#fff', align: 'center' });
+                exitText.fontSize = fontsize;
+                exitText.anchor.set(0.5, 0.5);
+            }
+
+            dice = game.add.sprite(w / 2, h / 1.3, 'dice');
+            dice.width = game.height / 4;
+            dice.height = dice.width;
+            dice.anchor.setTo(0.5, 0.5);
+
+            currPlayerText = game.add.text(popup.x, popup.y, player[currPlayer].name, { font: '200% Arial', fill: '#000', align: 'center', wordWrap: 'true', wordWrapWidth: w / 1.2 });
+            currPlayerText.anchor.set(0.5);
+            currPlayerText.fontSize = fontsize;
+            currPlayerText.visible = true;
+
+            startText = game.add.text(w / 2, h / 2, texts[0], fontstyle);
+            startText.anchor.set(0.5, 0.5);
+            startText.fontSize = fontsize;
+
+            game.input.onDown.addOnce(shuffleDice);
+        }
+
+        function animationComplete() {
+            isShuffeling = false;
+            if (fromMainGame != 1) {
+                currPlayerText.text = texts[1] + (dice.frame + 1);
+            }
+            else {
+                currPlayerText.text = player[currPlayer].name + '\n' + texts[1] + (dice.frame + 1);
+            }
+            player[currPlayer].drinkcount = parseInt(player[currPlayer].drinkcount) + dice.frame + 1;
+            if (currPlayer == player.length - 1) {
+                currPlayer = 0;
+            }
+            else {
+                currPlayer++;
+            }
+            game.input.onDown.addOnce(nextRound);
+        }
+
+        function nextRound() {
+            if (fromMainGame == 1) {
+                if (shufflecount < player.length) {
+                    currPlayerText.text = player[currPlayer].name + texts[2];
+                    game.input.onDown.addOnce(shuffleDice);
+                }
+                else {
+                    var i = 0;
+                    for (; i < player.length; i++) {
+                        localStorage.setItem('playerdrinks' + i, player[i].drinkcount);
+                    }
+                    if (currPlayer == player.length - 1) {
+                        currPlayer = 0;
+                    }
+                    else {
+                        currPlayer++;
+                    }
+                    localStorage.setItem('currPlayer', currPlayer);
+                    localStorage.setItem('newGame', 0);
+                    document.location.href = "mainGame.html";
+
+                }
+            }
+            else {
+                currPlayerText.text = player[currPlayer].name + texts[2];
+                game.input.onDown.addOnce(shuffleDice);
+            }
+        }
+
+        function shuffleDice() {
+            shufflecount++;
+            if (fromMainGame == 1) {
+                drink_label.text = shufflecount + '/' + playerCount;
+            }
+
+            startText.visible = false;
+            isShuffeling = true;
+            game.input.onDown.addOnce(animationComplete);
+
+        }
+
+        function exit() {
+            document.location.href = "miniSpielWaehlen.html";
+        }
+
+        function update() {
+            if (isShuffeling) {
+                animationCounter += shuffleSpeed * game.time.elapsed;
+                if (animationCounter >= 80) {
+                    dice.frame = Math.floor(Math.random() * 6);
+                    console.log(dice.frame);
+                    animationCounter = 0;
+                }
+            }
+        }
+
+    </script>
+
+</body>
+</html>

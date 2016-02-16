@@ -1,0 +1,29 @@
+﻿[
+	{
+	"id":"0",
+	"text":"Deine Nachbarn trinken 3",
+	"kosten":"0",
+	"warscheinlichkeit":"1",
+	"anzahl":"0",
+	"ziel":"neighbours",
+	"kategorie":"wenig"
+	},
+	{
+	"id":"1",
+	"text":"Alle ausser dir trinken 3",
+	"kosten":"0",
+	"warscheinlichkeit":"1",
+	"anzahl":"0",
+	"ziel":"self",
+	"kategorie":"mittel"
+	},
+	{
+	"id":"2",
+	"text":"Entscheide einen kurzen für drei Personen",
+	"kosten":"0",
+	"warscheinlichkeit":"1",
+	"anzahl":"0",
+	"ziel":"no",
+	"kategorie":"viel"
+	}
+]

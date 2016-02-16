@@ -1,0 +1,514 @@
+﻿<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>Flunkyball</title>
+    <script type="text/javascript" src="js/phaser.min.js"></script>
+    <script type="text/javascript" charset="utf-8" src="cordova.js"></script>
+    <style type="text/css">
+        body {
+            margin: 0;
+        }
+    </style>
+</head>
+<body>
+    <script type="text/javascript">
+        //TODO: Wenn StopSign sichtbar ist kann das trinkedne Team wählen ob sie schon fertig sind.
+
+        //control
+        var w = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
+        var h = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight
+        var game = new Phaser.Game(w, h, Phaser.AUTO, '', { preload: preload, create: create, update: update });
+        var fromMainGame = 0;
+        var fontsize = h / 16;
+        var language = '';
+        var texts;
+
+        //PLayer
+        var player = [];
+        var team1 = [];
+        var team2 = [];
+
+        //Images
+        var playerGui = [];
+        var aimer;
+        var aimField;
+        var ball;
+        var target;
+        var runner;
+        var stopSign;
+        var goSign;
+
+        //Texte
+        var earlyStartText;
+        var debugText;
+        var continueButtonText;
+        var finishText;
+
+        //timer
+        var animationTimer;
+
+        //gameLogik
+        var isTargetDown = false;
+        var currTeam = 2;
+        var gameState = 0;
+        var earlyStart = false;
+
+        //running
+        var runnerSpeed = 0.1;
+        var runDistance = 0;
+
+        //aiming
+        var aim = 0;
+        var aimSpeed = 0.002;
+        var aimDirection = 1;
+        var aimx1 = 0;
+        var aimx2;
+
+        //Buttons
+        var continueButton;
+        var finishButton;
+
+        //Konstanten
+        var buttonsPositionX1 = 0;
+        var buttonsPositionX2 = w;
+
+        document.addEventListener("deviceready", onDeviceReady, false);
+
+        function onDeviceReady() {
+            document.addEventListener("backbutton", onBackKeyDown, false);
+            window.plugins.insomnia.keepAwake();
+            isSmartphone = true;
+        }
+
+        function loadLanguage() {
+            language = localStorage.getItem('language');
+            fromMainGame = localStorage.getItem('kastriert');
+            if (language == 'de') {
+                game.load.json('texts', 'assets/Daten/Languages/flunkyball/german.json');
+            }
+            else {
+                game.load.json('texts', 'assets/Daten/Languages/flunkyball/english.json');
+            }
+        }
+
+        function preload() {
+            //Daten
+            loadLanguage();
+            playerCount = parseInt(localStorage.getItem('playercount'), 10);
+            for (var i = 0; i < playerCount; i++) {
+                player.push({ name: localStorage.getItem('playername' + i), drinkcount: localStorage.getItem('playerdrinks' + i) })
+            }
+            for (var i = 0; i < 8; i++) {       //TODO:TESTWERTE VOR RELEASE LÖSCHEN
+                player.push({ name: 'Test' + i, drinkcount: i });
+            }
+
+            initTeams();
+
+            //Bilder
+            game.load.image('aimField', 'assets/GUI/Flunkyball/aimField.png');
+            game.load.image('aimer', 'assets/GUI/Flunkyball/aimer.png');
+            game.load.image('background', 'assets/Hintergruende/FlunkyballBg.png');
+            game.load.image('popUpTransparent', 'assets/GUI/PopUp/PopUp400x300.png');
+            game.load.image('ball', 'assets/GUI/Flunkyball/ball.png');
+            game.load.image('target', 'assets/GUI/Flunkyball/target.png');
+            game.load.image('button', 'assets/GUI/Button/NormalButton.png');
+
+            //Noch zu Zeichnen
+            game.load.image('runner', 'assets/GUI/Flunkyball/runner.png');
+            game.load.image('stop', 'assets/GUI/Flunkyball/stop.png');
+            game.load.image('go', 'assets/GUI/Flunkyball/go.png');
+        }
+
+        function initTeams() {
+            var teamsize = Math.floor(player.length / 2);
+            for (var i = 0; i < player.length; i++) {
+                if (team1.length >= teamsize) {
+                    team2.push(player[i]);
+                }
+                else if (team2.length >= teamsize) {
+                    team1.push(player[i]);
+                }
+                else {
+                    var rnd = Math.floor(Math.random() * 2);
+                    if (rnd == 0) {
+                        team1.push(player[i]);
+                    }
+                    else {
+                        team2.push(player[i]);
+                    }
+                }
+            }
+        }
+
+        function create() {
+            texts = game.cache.getJSON('texts');
+            var fontstyle = { font: '150% Arial', fill: '#000', align: 'center', wordWrap: 'true', wordWrapWidth: w / 1.5 };
+
+            var background = game.add.image(0, 0, 'background');
+            background.width = game.width;
+            background.height = game.height;
+
+            aimField = game.add.image(aimx1, 0, 'aimField');
+            aimField.width = w / 15;
+            aimField.height = h / 1.5;
+            aimField.y = h / 2 - aimField.height / 2;
+
+            aimx2 = w - aimField.width;
+
+            aimer = game.add.image(aimField.x + aimField.width / 2, aimField.y + aimField.height / 2, 'aimer');
+            aimer.width = aimField.width * 1.3;
+            aimer.height = h / 30;
+            aimer.anchor.set(0.5);
+
+            target = game.add.image(w / 2, h / 2, 'target');
+            target.anchor.set(0.5);
+            target.width = h / 8;
+            target.height = target.width;
+
+            ball = game.add.image(aimer.x, aimer.y, 'ball');
+            ball.anchor.set(0.5);
+            ball.width = h / 6;
+            ball.height = ball.width;
+
+            runner = game.add.image(w, 0, 'runner');
+            runner.height = h / 5;
+            runner.width = runner.height / 3;
+            runner.y = h / 2 - runner.height / 2;
+            runner.anchor.set(0.5, 0);
+
+            var popUp;
+            playerGui.push(popUp = game.add.image(w / 2, h / 2, 'popUpTransparent'));
+            popUp.anchor.set(0.5);
+            popUp.width = w / 1.2;
+            popUp.height = h / 1.2;
+
+            var team1Text;
+            playerGui.push(team1Text = game.add.text(popUp.x - popUp.width / 2.2, popUp.y - popUp.height / 2.2, 'Team 1'));
+            team1Text.fontSize = fontsize * 1.5;
+            team1Text.fill = '#0000ff';
+
+            for (var i = 0; i < team1.length; i++) {
+                team1Text.text += '\n' + team1[i].name;
+            }
+
+            var team2Text;
+            playerGui.push(team2Text = game.add.text(popUp.x + popUp.width / 2.2, popUp.y - popUp.height / 2.2, 'Team 2'));
+            team2Text.fontSize = fontsize * 1.5;
+            team2Text.fill = '#ff0000';
+            team2Text.anchor.set(1, 0);
+
+            for (var i = 0; i < team2.length; i++) {
+                team2Text.text += '\n' + team2[i].name;
+            }
+
+            earlyStartText = game.add.text(w / 2, h / 2, texts[2]);
+            earlyStartText.anchor.set(0.5);
+            earlyStartText.fontSize = fontsize * 2;
+            earlyStartText.visible = false;
+
+            goSign = game.add.image(w / 4 * 3, h / 2, 'go');
+            goSign.height = h / 1.5;
+            goSign.width = goSign.height;
+            goSign.anchor.set(0.5);
+            goSign.visible = false;
+
+            stopSign = game.add.sprite(w / 4, h / 2, 'stop');
+            stopSign.height = h / 1.5;
+            stopSign.width = stopSign.height;
+            stopSign.anchor.set(0.5);
+            stopSign.visible = false;
+
+            finishButton = game.add.button(buttonsPositionX1, 0, 'button', exit);
+            finishButton.width = w / 4;
+            finishButton.height = h / 8;
+            finishButton.rotation = Math.PI / 2;
+            finishButton.y = h - finishButton.width;
+
+            finishText = game.add.text(finishButton.x + finishButton.height / 2, finishButton.y + finishButton.width / 2, texts[0]);
+            finishText.anchor.set(0.5);
+            finishText.rotation = (Math.PI / 2);
+            finishText.fontSize = fontsize;
+
+
+            continueButton = game.add.button(buttonsPositionX1, 0, 'button', startTurn);
+            continueButton.width = finishButton.width;
+            continueButton.height = finishButton.height;
+            continueButton.rotation = Math.PI / 2;
+
+            continueButtonText = game.add.text(continueButton.x + continueButton.height / 2, continueButton.y + continueButton.width / 2, texts[1]);
+            continueButtonText.anchor.set(0.5);
+            continueButtonText.rotation = (Math.PI / 2);
+            continueButtonText.fontSize = fontsize;
+
+            buttonsPositionX1 += continueButton.height;
+            continueButton.x = buttonsPositionX1;
+            finishButton.x = buttonsPositionX1;
+
+            continueButton.visible = false;
+            continueButtonText.visible = false;
+            finishButton.visible = false;
+            finishText.visible = false;
+
+            game.input.onDown.addOnce(showStartScreen);
+        }
+
+        function showStartScreen() {
+            for (var i = 0; i < playerGui.length; i++) {
+                playerGui[i].visible = false;
+            }
+
+            startTurn();
+            game.input.onDown.add(shoot);
+            game.input.onDown.add(run);
+        }
+
+        function startTurn() {
+            earlyStart = false;
+            earlyStartText.visible = false;
+            isTargetDown = false;
+            gameState = 1;
+            continueButton.visible = false;
+            continueButtonText.visible = false;
+            finishButton.visible = false;
+            finishText.visible = false;
+            
+            if (currTeam == 1) {
+                runner.x = 0;
+                aimField.x = aimx2;
+                ball.x = aimField.x + ball.width / 2 - aimField.width;
+                goSign.x = w / 4;
+                stopSign.x = w / 4 * 3;
+                goSign.rotation = Math.PI / 2;
+                stopSign.rotation = Math.PI / 2 * 3;
+            }
+            else {
+                runner.x = w;
+                aimField.x = aimx1;
+                ball.x = aimField.x - ball.width / 2;
+                goSign.x = w / 4 * 3;
+                stopSign.x = w / 4;
+                goSign.rotation = Math.PI/2*3;
+                stopSign.rotation = Math.PI / 2;
+            }
+            aimer.x = aimField.x + aimField.width / 2;
+            aimer.y = aimField.y + aimField.height / 2;
+            ball.y = aimField.y + aimField.height / 2;
+
+
+
+            game.input.onDown.add(run);
+
+        }
+
+        function exit() {
+            if (fromMainGame) {
+                var currPlayer = localStorage.getItem('currPlayer');
+                currPlayer++;
+                localStorage.setItem('currPlayer', currPlayer);
+                document.location.href = 'mainGame.html';
+            }
+            else {
+                document.location.href = "miniSpielWaehlen.html";
+            }
+        }
+
+        function increaseAim() {
+            aim += game.time.elapsed * aimSpeed * aimDirection;
+            if (aim > 1) {
+                aimDirection = -1;
+            }
+            else if (aim < -1) {
+                aimDirection = 1;
+            }
+            var position = 1 + 0.5 * aim;
+            aimer.y = position * aimField.height - aimField.height / 2 + aimField.y;
+        }
+
+        function run() {
+            var inputX = game.input.worldX;
+            var side;
+            if (currTeam == 1) {
+                side = inputX < w / 2;
+            }
+            else {
+                side = inputX > w / 2;
+            }
+            if (side) {
+                if (gameState == 4 && isTargetDown) {
+                    if (goSign.visible) {
+                        goSign.visible = false;
+                    }
+                    runDistance += runnerSpeed;
+                    if (currTeam == 1) {
+                        runner.x = w / 2 * runDistance;
+                    }
+                    else {
+                        var test = w - w / 2 * runDistance;
+                        runner.x = test;
+                    }
+                    if (runDistance >= 1) {
+                        gameState = 5;
+                    }
+                }
+                else if (gameState == 5) {
+                    runDistance -= runnerSpeed;
+                    if (currTeam == 1) {
+                        runner.x = w / 2 * runDistance;
+                    }
+                    else {
+                        runner.x = w - w / 2 * runDistance;
+                    }
+                    if (runDistance <= 0) {
+                        stopSign.visible = true;
+                        game.input.onDown.removeAll();
+                        game.input.onDown.add(shoot);
+                        gameState = 6;
+                    }
+                }
+                else if (gameState != 6 && gameState != -3) {
+                    earlyStarted();
+                    
+                }
+            }
+        }
+
+        function shoot() {
+            var inputX = game.input.worldX;
+            var side;
+
+            if (currTeam == 1) {
+                side = inputX > w / 2;
+            }
+            else {
+                side = inputX < w / 2;
+            }
+            if (side) {
+                if (earlyStart) {
+                    earlyStartText.visible = false;
+                    earlyStart = false;
+                }
+                else {
+                    if (gameState == 6) {
+                        if (aim * 3 < 0.5 && aim * 3 > -0.5) {
+                            endTurn();
+                        }
+                    }
+                    else if (gameState == 1) {
+                        if (aim * 3 < 0.5 && aim * 3 > -0.5) {
+                            playHitAnimation();
+                        }
+                        else {
+                            playMissAnimation();
+                        }
+                    }
+                }
+            }
+        }
+
+        function playHitAnimation() {
+            gameState = 2;
+        }
+
+        function endHitAnimation() {
+            gameState = 4;
+            
+            goSign.visible = true;
+            isTargetDown = true;
+        }
+
+        function playMissAnimation() {
+            gameState = 3;
+        }
+
+        function endMissAnimation() {
+            gameState = 0;
+            miss();
+        }
+
+        var earlyStartTimer;
+        function earlyStarted() {
+            gameState = -3;
+            earlyStartText.visible = true;
+            earlyStart = true;
+            earlyStartTimer = game.time.create(false);
+            earlyStartTimer.loop(1000, earlyStartTimerTick, this);
+            earlyStartTimer.start();
+        }
+
+        function earlyStartTimerTick() {
+            earlyStartTimer.stop();
+            earlyStartTimer.destroy();
+            startTurn();
+        }
+
+        function miss() {
+            if (currTeam == 1) {
+                currTeam = 2;
+            }
+            else {
+                currTeam = 1;
+            }
+            startTurn();
+        }
+
+        function endTurn() {
+            continueButton.visible = true;
+            continueButtonText.visible = true;
+            finishButton.visible = true;
+            finishText.visible = true;
+            
+            if (currTeam == 1) {
+                currTeam = 2;
+            }
+            else {
+                currTeam = 1;
+            }
+            stopSign.visible = false;
+            
+        }
+
+        function update() {
+            console.log(gameState);
+            if (gameState == 1) //aiming
+            {
+                increaseAim();
+            }
+            else if (gameState == 2)  //Hit
+            {
+                if (currTeam == 1) {
+                    ball.x -= game.time.elapsed * 0.8;
+                    if (ball.x <= target.x) {
+                        endHitAnimation();
+                    }
+                }
+                else {
+                    ball.x += game.time.elapsed * 0.8;
+                    if (ball.x >= target.x) {
+                        endHitAnimation();
+                    }
+                }
+            }
+            else if (gameState == 3) //Miss
+            {
+                if (currTeam == 1) {
+                    ball.x -= game.time.elapsed * 0.9;
+                    ball.y += game.time.elapsed * aim;
+                    if (ball.y < 0 - ball.height / 2 || ball.y > h + ball.height / 2) {
+                        endMissAnimation();
+                    }
+                }
+                else {
+                    ball.x += game.time.elapsed * 0.9;
+                    ball.y += game.time.elapsed * aim;
+                    if (ball.y < 0 - ball.height / 2 || ball.y > h + ball.height / 2) {
+                        endMissAnimation();
+                    }
+                }
+            }
+        }
+
+    </script>
+
+</body>
+</html>

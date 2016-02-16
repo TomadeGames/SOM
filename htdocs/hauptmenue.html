@@ -1,0 +1,325 @@
+﻿<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>Hauptmenue</title>
+    <script type="text/javascript" charset="utf-8" src="cordova.js"></script>
+    <script type="text/javascript" src="js/phaser.min.js"></script>
+    <script type="text/javascript" src="js/files.js"></script>
+    <script type="text/javascript" src="js/options.js"></script>
+    <script type="text/javascript" src="js/sounds.js"></script>
+    <style type="text/css">
+        body {
+            margin: 0;
+        }
+    </style>
+</head>
+<body>
+
+    <script type="text/javascript">
+        //Allgemeine Variabeln
+        var w = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
+        var h = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight
+        var game = new Phaser.Game(w, h, Phaser.AUTO, '', { preload: preload, create: create, update: update });
+        var isSmartphone = false;
+
+        //Buttons
+        var startButton;
+        var miniGamesButton;
+		var startNewGameButton;
+		var invisibleButton;
+		
+		//Texte
+		var startNewGameText;
+		var loadGameText;
+		
+		//Popup
+		var startGamePopUp;
+
+        //Texte
+        var loadText;
+
+        //Game laden
+        var showButton = false;
+        var playerArray = [];
+        var currPlayer;
+        var saveExists = false;
+
+        //sprachen
+        var texts;
+        var language = 'de-DE';
+
+        document.addEventListener("deviceready", onDeviceReady, false);
+
+        function onDeviceReady() {
+            isSmartphone = true;
+            checkIfFileExists('save.txt', false);
+            loadGame();
+        }
+
+        function loadLanguage() {
+            language = localStorage.getItem('language');
+            if (language == 'de') {
+                game.load.json('texts', 'assets/Daten/Languages/hauptmenue/german.json');
+                game.load.json('optionTexts', 'assets/Daten/Languages/options/german.json');
+            }
+            else {
+                game.load.json('texts', 'assets/Daten/Languages/hauptmenue/english.json');
+                game.load.json('optionTexts', 'assets/Daten/Languages/options/english.json');
+            }
+        }
+
+        function preload() {
+            //Daten
+            loadLanguage();
+            game.load.spritesheet('startButton', 'assets/GUI/Button/startButton.png',1000,450);
+            game.load.spritesheet('gamesButton', 'assets/GUI/Button/minigamesButton.png',1000,450);
+			game.load.image('normalButton','assets/GUI/Button/NormalButton.png');
+            game.load.image('popUpTransparent', 'assets/GUI/PopUp/PopUpTransparent.png');
+            game.load.image('background', 'assets/Hintergruende/Hauptmenue.png');
+            game.load.image('invisible', 'assets/GUI/Button/Unsichtbar.png');
+            game.load.image('optionsButton', 'assets/GUI/Button/Optionen.png');
+            game.load.image('ok', 'assets/GUI/Button/check2.png');
+
+            game.load.spritesheet('spracheButton', 'assets/GUI/Button/SpracheButton.png', 128, 127);
+            game.load.spritesheet('soundButton', 'assets/GUI/Button/SoundButton.png', 130, 130);
+        }
+
+        function create() {
+            texts = game.cache.getJSON('texts');
+            optionTexts = game.cache.getJSON('optionTexts');
+            var textstyle = { font: '300% Arial', fill: '#FFF', align: 'center', wordWrap: 'true', wordWrapWidth: w / 1.6 };
+            var background = game.add.image(0, 0, 'background');
+            background.width = game.width;
+            background.height = game.height;
+
+            startButton = game.add.sprite(game.width / 8, game.height /1.43, 'startButton', 0);
+            startButton.width = game.width / 6;
+            startButton.height = game.height / 6;
+            startButton.inputEnabled = true;
+            startButton.events.onInputDown.add(startButtonDown);
+            startButton.events.onInputUp.add(startButtonUp);
+
+            miniGamesButton = game.add.sprite(game.width /1.5, startButton.y, 'gamesButton', 0);
+            miniGamesButton.width = startButton.width;
+            miniGamesButton.height = startButton.height;
+            miniGamesButton.inputEnabled = true;
+            miniGamesButton.events.onInputDown.add(miniGamesButtonnDown);
+            miniGamesButton.events.onInputUp.add(miniGamesButtonUp);
+			
+            optionsButton = game.add.button(0, 0, 'optionsButton', showOptions);
+            optionsButton.width = w / 9;
+            optionsButton.height = h / 8;
+
+			invisibleButton = game.add.button(0,0,'invisible', closePopUp);
+			invisibleButton.width = game.width;
+			invisibleButton.height= game.height;
+			invisibleButton.visible = false;
+
+			startGamePopUp = game.add.image(game.width/2, game.height/2, 'popUpTransparent');
+			startGamePopUp.anchor.set(0.5);
+			startGamePopUp.width = game.width /2;
+			startGamePopUp.height = game.height/2;
+			startGamePopUp.visible = false;  
+
+			startNewGameButton = game.add.button(startGamePopUp.x,startGamePopUp.y-startGamePopUp.height/4,'normalButton',startGameClick);
+       		startNewGameButton.width = startGamePopUp.width/1.3;
+			startNewGameButton.height = startGamePopUp.height/2.7;
+			startNewGameButton.anchor.set(0.5);
+			startNewGameButton.visible=false;
+			
+			startNewGameText = game.add.text(startNewGameButton.x, startNewGameButton.y, texts[4], textstyle);
+            startNewGameText.anchor.set(0.5, 0.5);
+            startNewGameText.fontSize = h/16;
+			startNewGameText.visible = false;
+			
+			loadGameButton = game.add.button(startGamePopUp.x,startGamePopUp.y + startGamePopUp.height/4, 'normalButton', loadGameClick);
+			loadGameButton.width = startNewGameButton.width;
+			loadGameButton.height = startNewGameButton.height;
+			loadGameButton.anchor.set(0.5);
+			loadGameButton.visible=false;
+			
+			loadGameText = game.add.text(loadGameButton.x, loadGameButton.y, texts[0], textstyle);
+            loadGameText.anchor.set(0.5, 0.5);
+            loadGameText.fontSize = h/16;
+            loadGameText.visible = false;
+
+            initOptions('ok', 'normalButton', 'popUpTransparent', 'soundButton', 'invisible', 'spracheButton', optionTexts, false);
+	   }
+
+        function startButtonDown() {
+            startButton.frame = 1;
+        }
+
+        function startButtonUp() {
+            startButton.frame = 0;
+			if(saveExists){
+				showPopUp();
+			}
+			else{
+				startGameClick();
+			}
+        }
+
+        function miniGamesButtonnDown() {
+            miniGamesButton.frame = 1;
+        }
+
+        function miniGamesButtonUp() {
+            miniGamesButton.frame = 0;
+            miniGamesClick();
+        }
+
+        //Button events
+		function showPopUp(){
+			startGamePopUp.visible = true;
+			startNewGameButton.visible=true;
+			loadGameButton.visible =true;
+			invisibleButton.visible = true;
+			loadGameText.visible = true;
+			startNewGameText.visible = true;
+		}
+		
+		function closePopUp(){
+			startGamePopUp.visible = false;
+			startNewGameButton.visible = false;
+			loadGameButton.visible = false;
+			invisibleButton.visible = false;
+			loadGameText.visible = false;
+			startNewGameText.visible = false;
+		}
+		
+		
+        function loadGameClick() {
+            if (saveExists) {
+                localStorage.setItem('playercount', playerArray.length);
+                for (var i = 0; i < playerArray.length; i++) {
+                    localStorage.setItem('playername' + i, playerArray[i].name);
+                    localStorage.setItem('playerweight' + i, playerArray[i].weight);
+                    localStorage.setItem('playergender' + i, playerArray[i].gender);
+                    localStorage.setItem('playerdrinks' + i, playerArray[i].drinkcount);
+                }
+                localStorage.setItem('currPlayer', currPlayer);
+
+                document.location.href = 'mainGame.html';
+            }
+            else {
+                alert('That shouldnt happen :( please start a new game');
+            }
+        }
+
+        function creditsClick() {
+            document.location.href = 'credits.html';
+        }
+
+        function miniGamesClick() {
+            document.location.href = 'miniSpielWaehlen.html';        	
+        }
+
+        function startGameClick() {
+            for(var i = 0; i< 5;i++){
+                localStorage.setItem('used' + i, 0);
+            }
+            document.location.href = 'spielErstellen.html';
+        }
+
+        function update() {
+        }
+
+        function gameLoaded(text) {
+            var players = text.split('\n');
+            currPlayer = players[0];
+            for (var i = 1; i < players.length; i++) {
+                if (players[i] != '') {
+                    var values = players[i].split(';');
+                    playerArray.push({ name: values[0], weight: values[1], gender: values[2], drinkcount: values[3] });
+                }
+            }
+        }
+
+
+        //Datei verarbeitung
+        function loadGame() {
+            if (isSmartphone) {
+                window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, function (fileSystem) {
+                    fileSystem.root.getFile('SaufOMat/save.txt', { create: false }, initSaveRead, fileNotFound);
+                }, getFSFail);
+            }
+        }
+
+        function fail() {
+            alert('ehhh fail?');
+        }
+
+        function fileNotFound() {
+            console.log('file not found');
+        }
+
+        function initSaveRead(fileEntry) {
+            fileEntry.file(readSaveFile, fail);
+        }
+
+        function readSaveFile(file) {
+            var reader = new FileReader();
+            reader.onloadend = function (evt) {
+                gameLoaded(evt.target.result);
+            };
+            reader.readAsText(file);
+        }
+
+        function checkIfFileExists(file, create) {
+            if (isSmartphone) {
+                window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, function (fileSystem) { fileSystem.root.getFile('SaufOMat/' + file, { create: create }, fileExists, fileDoesNotExist), getFSFail });
+            }
+        }
+
+        function fileExists(fileEntry) {
+            saveExists = true;
+            showButton = true;
+            loadButton.visible = true;
+        }
+
+        function fileDoesNotExist() {
+            saveExists = false;
+            showButton = false;
+            loadButton.visible = false;
+        }
+
+        function getFSFail(evt) {
+            alert('FSError');
+        }
+
+        //sound
+        function playAudio(src) {
+            if (isSmartphone && !isMuted) {
+                // Create Media object from src
+                my_media = new Media(src, onSuccess, onError);
+
+                // Play audio
+                my_media.play();
+
+                // Update my_media position every second
+                if (mediaTimer == null) {
+                    mediaTimer = setInterval(function () {
+                        // get my_media position
+                        my_media.getCurrentPosition(
+                            // success callback
+                            function (position) {
+                                if (position > -1) {
+                                    setAudioPosition((position) + " sec");
+                                }
+                            },
+                            // error callback
+                            function (e) {
+                                console.log("Error getting pos=" + e);
+                                setAudioPosition("Error: " + e);
+                            }
+                        );
+                    }, 1000);
+                }
+            }
+        }
+    </script>
+
+</body>
+</html>

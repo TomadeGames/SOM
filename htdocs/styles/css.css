@@ -1,0 +1,103 @@
+* {
+	margin: 0;
+	padding: 0;
+}
+
+/*#startButton{
+
+}*/
+
+.smallText{
+	font-size: 80%;	
+}
+
+.center-wrapper{
+	text-align: center;
+}
+
+.center-wrapper * {
+	margin: 0 auto;
+}
+
+#spacer{
+	margin-bottom: 30%;
+}
+
+#marginBottom{
+	margin-bottom: 10px;
+}
+
+.redButton{
+	text-shadow: 1px 1px 0px rgba(255, 255, 255, 0.25) !important;
+	background-color: #ff8a63 !important;
+}
+
+.redButton:active{
+	background-color: #ffaf94 !important;
+}
+
+.greenButton{
+	width: 25%;
+	text-shadow: 1px 1px 0px rgba(255, 255, 255, 0.25) !important;
+	background-color: #a9ff7e !important;
+}
+
+.greenButton:active{
+	background-color: #ccffb3 !important;
+}
+
+.blueButton{
+	width: 25%;
+	text-shadow: 1px 1px 0px rgba(255, 255, 255, 0.25) !important;
+	background-color: #a1daf6 !important;
+}
+
+.blueButton:active{
+	background-color: #d0e9f5 !important;
+}
+
+#wrapper{
+	width: 85%;
+	margin: 0 auto;
+}
+
+#dummyKeyboard{	
+	position: fixed;
+	width: 100%;
+	height: 65%;/*50% mit autocorrectvorschlägen 65%  450x252*/
+    bottom: 0;
+	background-color: rgba(150, 150, 150, 0.9);
+}
+
+#nav{
+	position: fixed;	
+	top: 0;
+	right: 0;
+	margin: 0; 
+}
+
+#toTopGroup{
+	position: fixed;
+	top: 0;
+	left: 0;	
+	margin: 0;
+}
+
+#nav a{
+	background-color: #218dc2;
+}
+
+#toTopGroup a{
+	background-color: #218dc2;
+}
+
+#nav a:active{
+	background-color: #26a2e0;
+}
+
+#toTopGroup a:active{
+	background-color: #26a2e0;
+}
+
+
+

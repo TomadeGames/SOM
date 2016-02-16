@@ -1,0 +1,77 @@
+﻿<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>Sauf-O-Mat</title>
+    <script type="text/javascript" src="js/phaser.min.js"></script>
+    <script type="text/javascript" src="js/files.js"></script>
+    <script type="text/javascript" charset="utf-8" src="cordova.js"></script>
+    <style type="text/css">
+        body {
+            margin: 0;
+        }
+    </style>
+</head>
+<body>
+    <script type="text/javascript">
+        //Algemeine Variabeln
+        var w = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
+        var h = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight
+        var game = new Phaser.Game(w, h, Phaser.AUTO, '', { preload: preload, create: create, update: update });
+        var isSmartphone = false;
+
+        var texts;
+        var fontsize = h / 16;
+        var language = 'de-DE';
+
+        document.addEventListener("deviceready", onDeviceReady, false);
+
+        function onDeviceReady() {
+            isSmartphone = true;
+        }
+
+        function loadLanguage() {
+            language = localStorage.getItem('language');
+            if (language == 'de') {
+                game.load.json('texts', 'assets/Daten/Languages/credits/german.json');
+            }
+            else {
+                game.load.json('texts', 'assets/Daten/Languages/credits/english.json');
+            }
+        }
+
+        function preload() {
+            //Daten
+            loadLanguage();
+            game.load.image('logo', 'assets/Tomade.png');
+        }
+
+        function create() {
+            texts = game.cache.getJSON('texts');
+            game.input.onDown.addOnce(closeCredits);
+            game.stage.backgroundColor = '#9FD54E';
+            var textstyle = { font: '300% Arial', fill: '#FFF', align: 'center', wordWrap: 'true', wordWrapWidth: w / 1.6 };
+
+            var logo = game.add.image(w / 2, h / 5, 'logo');
+            logo.anchor.set(0.5);
+            var scale = game.width /(logo.width*1.1) ;
+            logo.scale.set(scale);
+
+            var text = game.add.text(w / 2, h / 1.7, texts[0], textstyle);
+            text.fontSize = fontsize;
+            text.anchor.set(0.5);
+        }
+
+        function closeCredits() {
+            document.location.href = 'hauptmenue.html';
+        }
+
+        function update()
+        {
+
+        }
+
+    </script>
+
+</body>
+</html>

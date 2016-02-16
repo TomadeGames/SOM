@@ -1,0 +1,29 @@
+[
+	{
+	"id":"0",
+	"text":"Your Neighbours drink 3",
+	"kosten":"0",
+	"warscheinlichkeit":"1",
+	"anzahl":"0",
+	"ziel":"neighbours",
+	"kategorie":"wenig"
+	},
+	{
+	"id":"1",
+	"text":"Everyone except you drink 3",
+	"kosten":"0",
+	"warscheinlichkeit":"1",
+	"anzahl":"0",
+	"ziel":"self",
+	"kategorie":"mittel"
+	},
+	{
+	"id":"2",
+	"text":"Decide one shot for 3 player",
+	"kosten":"0",
+	"warscheinlichkeit":"1",
+	"anzahl":"0",
+	"ziel":"no",
+	"kategorie":"viel"
+	}
+]

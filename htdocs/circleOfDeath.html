@@ -1,0 +1,395 @@
+﻿<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>Circle of Death</title>
+    <script type="text/javascript" src="js/phaser.min.js"></script>
+    <script type="text/javascript" src="js/files.js"></script>
+    <script type="text/javascript" src="js/sounds.js"></script>
+    <script type="text/javascript" charset="utf-8" src="cordova.js"></script>
+    <style type="text/css">
+        body {
+            margin: 0;
+        }
+    </style>
+</head>
+<body>
+
+    <script type="text/javascript">
+
+        var w = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth, h = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
+        var randomNumber = 0, card, counter = 1, button;
+        var game = new Phaser.Game(w, h, Phaser.AUTO, '', { preload: preload, create: create, update: update });
+        var playerCount;
+        var isSmartphone = false;
+        var player = [];
+        var currPlayer = 0;
+        var card;
+        var isKings = true;
+        var fromMainGame;
+        var maxCards;
+        var fontsize = h / 16;
+
+        var language;
+        var texts;
+
+        var cardArray = [
+                            { name: 'ka_7', colour: 'red', value: 7, used: 'false', image: '1' },
+                            { name: 'ka_8', colour: 'red', value: 8, used: 'false', image: '2' },
+                            { name: 'ka_9', colour: 'red', value: 9, used: 'false', image: '3' },
+                            { name: 'ka_10', colour: 'red', value: 10, used: 'false', image: '4' },
+                            { name: 'ka_bu', colour: 'red', value: 11, used: 'false', image: '5' },
+                            { name: 'ka_da', colour: 'red', value: 12, used: 'false', image: '6' },
+                            { name: 'ka_koe', colour: 'red', value: 13, used: 'false', image: '7' },
+                            { name: 'ka_ass', colour: 'red', value: 14, used: 'false', image: '8' },
+
+                            { name: 'he_7', colour: 'red', value: 7, used: 'false', image: '9' },
+                            { name: 'he_8', colour: 'red', value: 8, used: 'false', image: '10' },
+                            { name: 'he_9', colour: 'red', value: 9, used: 'false', image: '11' },
+                            { name: 'he_10', colour: 'red', value: 10, used: 'false', image: '12' },
+                            { name: 'he_bu', colour: 'red', value: 11, used: 'false', image: '13' },
+                            { name: 'he_da', colour: 'red', value: 12, used: 'false', image: '14' },
+                            { name: 'he_koe', colour: 'red', value: 13, used: 'false', image: '15' },
+                            { name: 'he_ass', colour: 'red', value: 14, used: 'false', image: '16' },
+
+                            { name: 'pi_7', colour: 'black', value: 7, used: 'false', image: '17' },
+                            { name: 'pi_8', colour: 'black', value: 8, used: 'false', image: '18' },
+                            { name: 'pi_9', colour: 'black', value: 9, used: 'false', image: '19' },
+                            { name: 'pi_10', colour: 'black', value: 10, used: 'false', image: '20' },
+                            { name: 'pi_bu', colour: 'black', value: 11, used: 'false', image: '21' },
+                            { name: 'pi_da', colour: 'black', value: 12, used: 'false', image: '22' },
+                            { name: 'pi_koe', colour: 'black', value: 13, used: 'false', image: '23' },
+                            { name: 'pi_ass', colour: 'black', value: 14, used: 'false', image: '24' },
+
+                            { name: 'kr_7', colour: 'black', value: 7, used: 'false', image: '25' },
+                            { name: 'kr_8', colour: 'black', value: 8, used: 'false', image: '26' },
+                            { name: 'kr_9', colour: 'black', value: 9, used: 'false', image: '27' },
+                            { name: 'kr_10', colour: 'black', value: 10, used: 'false', image: '28' },
+                            { name: 'kr_bu', colour: 'black', value: 11, used: 'false', image: '29' },
+                            { name: 'kr_da', colour: 'black', value: 12, used: 'false', image: '30' },
+                            { name: 'kr_koe', colour: 'black', value: 13, used: 'false', image: '31' },
+                            { name: 'kr_ass', colour: 'black', value: 14, used: 'false', image: '32' }
+        ]
+
+
+        function loadLanguage() {
+            language = localStorage.getItem('language');
+            isKings = localStorage.getItem('isKings');
+            fromMainGame = localStorage.getItem('kastriert');
+            if (language == 'de') {
+                game.load.json('texts', 'assets/Daten/Languages/circleOfDeath/german.json');
+            }
+            else {
+                game.load.json('texts', 'assets/Daten/Languages/circleOfDeath/english.json');
+            }
+        }
+
+        function loadValues() {
+            for (var i = 0; i < parseInt(localStorage.getItem('playercount'), 10) ; i++) {
+                player.push({ name: localStorage.getItem('playername' + i), drinkcount: Math.floor(localStorage.getItem('playerdrinks' + i)) })
+            }
+            currPlayer = localStorage.getItem('currPlayer');
+        }
+
+        function preload() {
+            //Daten
+            loadLanguage();
+            loadValues();
+
+            playerCount = parseInt(localStorage.getItem('playercount'), 10);
+            game.load.image('1', 'assets/Karten/karo7.png');
+            game.load.image('2', 'assets/Karten/karo8.png');
+            game.load.image('3', 'assets/Karten/karo9.png');
+            game.load.image('4', 'assets/Karten/karo10.png');
+            game.load.image('5', 'assets/Karten/karoBube.png');
+            game.load.image('6', 'assets/Karten/karoDame.png');
+            game.load.image('7', 'assets/Karten/karoKoenig.png');
+            game.load.image('8', 'assets/Karten/karoAss.png');
+            game.load.image('9', 'assets/Karten/karo7.png');
+            game.load.image('10', 'assets/Karten/herz8.png');
+            game.load.image('11', 'assets/Karten/herz9.png');
+            game.load.image('12', 'assets/Karten/herz10.png');
+            game.load.image('13', 'assets/Karten/herzBube.png');
+            game.load.image('14', 'assets/Karten/herzDame.png');
+            game.load.image('15', 'assets/Karten/herzKoenig.png');
+            game.load.image('16', 'assets/Karten/herzAss.png');
+            game.load.image('17', 'assets/Karten/pik7.png');
+            game.load.image('18', 'assets/Karten/pik8.png');
+            game.load.image('19', 'assets/Karten/pik9.png');
+            game.load.image('20', 'assets/Karten/pik10.png');
+            game.load.image('21', 'assets/Karten/pikBube.png');
+            game.load.image('22', 'assets/Karten/pikDame.png');
+            game.load.image('23', 'assets/Karten/pikKoenig.png');
+            game.load.image('24', 'assets/Karten/pikAss.png');
+            game.load.image('25', 'assets/Karten/kreuz7.png');
+            game.load.image('26', 'assets/Karten/kreuz8.png');
+            game.load.image('27', 'assets/Karten/kreuz9.png');
+            game.load.image('28', 'assets/Karten/kreuz10.png');
+            game.load.image('29', 'assets/Karten/kreuzBube.png');
+            game.load.image('30', 'assets/Karten/kreuzDame.png');
+            game.load.image('31', 'assets/Karten/kreuzKoenig.png');
+            game.load.image('32', 'assets/Karten/kreuzAss.png');
+            game.load.image('backCard', 'assets/Karten/rueckseite.png');
+
+            game.load.image('Unsichtbar', 'assets/GUI/Button/Unsichtbar.png');
+            game.load.image('info', 'assets/GUI/Button/Help.png');
+
+            game.load.image('popUp', 'assets/GUI/PopUp/PopUp400x300.png');
+            game.load.image('exit', 'assets/GUI/Button/NoButton.png');
+
+            game.load.image('wuerfelFeld', 'assets/Hintergruende/Tepich.png');
+        }
+
+        function create() {
+            if (fromMainGame == 1) {
+                if (playerCount * 3 <= 32) {
+                    maxCards = playerCount * 3;
+                }
+                else {
+                    maxCards = 32;
+                }
+            }
+            else{
+                maxCards = 32;
+            }
+            
+            texts = game.cache.getJSON('texts');
+            var background = game.add.sprite(0, 0, 'wuerfelFeld');
+            background.width = w;
+            background.height = h;
+
+            cards = game.add.group();
+
+            card = cards.create(3 * (w / 5) - (w / 7), h / 4, 'backCard');
+            card.anchor.setTo(0.5, 0.5);
+            var hoehe = h / 2.5
+            card.width = hoehe / 1.5;
+            card.height = h / 2.5;
+
+            popUpFenster = game.add.sprite(w / 2, h / 1.5, 'popUp');
+            popUpFenster.anchor.setTo(0.5, 0.5);
+            popUpFenster.width = w / 1.1;
+            popUpFenster.height = h / 2;
+
+            choiseLabel = game.add.text(w / 2, h / 1.5 - h / 60, '', { font: '200% Arial', fill: '#000', align: 'center', wordWrap: 'true', wordWrapWidth: w / 1.2 });
+            choiseLabel.anchor.setTo(0.5, 0.5);
+            choiseLabel.fontSize = fontsize;
+
+            button = game.add.button(w / 2, h / 2, 'Unsichtbar', showPlayer, this, 2, 1, 0);
+            button.anchor.setTo(0.5, 0.5);
+            button.width = w;
+            button.height = h;
+
+            drink_label = game.add.text(w - w / 5, h / 60, 'Karte 1/32', { font: '200% Arial', fill: '#fff', align: 'center' });
+            drink_label.text = 'Karte ' + counter + '/' + maxCards;
+            drink_label.fontSize = fontsize/1.3;
+
+            if(fromMainGame == 0)
+            {
+                exit = game.add.button(drink_label.x + drink_label.width / 2, drink_label.y + drink_label.height * 2, 'exit', exit, this, 2, 1, 0);
+                exit.width = w / 6;
+                exit.height = exit.width / 250 * 90;
+	            exit.anchor.set(0.5);
+
+	            exitText = game.add.text(exit.x, exit.y, texts[20], { font: '200% Arial', fill: '#fff', align: 'center' });
+	            exitText.fontSize = fontsize;
+	            exitText.anchor.set(0.5, 0.5);
+            }
+            
+
+            info_text = game.add.text(w / 2, h / 1.5 - h / 60, texts[0], { font: '200% Arial', fill: '#000', align: 'center', wordWrap: 'true', wordWrapWidth: w / 1.2 });
+            info_text.anchor.setTo(0.5, 0.5);
+            info_text.visible = false;
+            info_text.fontSize = fontsize;
+
+            info_label = game.add.button(w / 60, h / 60, 'info', showInfo, this, 2, 1, 0);
+            info_label.width = w / 18;
+            info_label.height = w / 18;
+
+            if (isSmartphone) {
+                read('options.txt');
+            }
+
+            showPlayer();
+        }
+
+        function update() {
+
+        }
+
+        document.addEventListener("deviceready", onDeviceReady, false);
+
+        function onDeviceReady() {
+            document.addEventListener("backbutton", onBackKeyDown, false);
+            window.plugins.insomnia.keepAwake();
+            isSmartphone = true;
+        }
+
+        function exit() {
+            localStorage.setItem('newGame', 0);
+            document.location.href = "miniSpielWaehlen.html";
+        }
+
+        function readFinished() {
+            if (readInput == 'mute:0') {
+                isMuted = false;
+            }
+            else {
+                isMuted = true;
+            }
+        }
+
+        function showInfo() {
+            playAudio('/android_asset/www/assets/sounds/button.wav');
+            info_label.visible = false;
+            info_text.visible = true;
+            choiseLabel.visible = false;
+            back = game.add.button(w / 2, h / 2, 'Unsichtbar', continueGame, this, 2, 1, 0);
+            back.anchor.setTo(0.5, 0.5);
+            back.width = w;
+            back.height = h;
+        }
+
+        function continueGame() {
+            playAudio('/android_asset/www/assets/sounds/button.wav');
+            back.destroy();
+            info_text.visible = false;
+            choiseLabel.visible = true;
+            info_label.visible = true;
+        }
+
+        function increasePlayer() {
+            lastPlayer = currPlayer;
+            if (currPlayer == player.length - 1) {
+                currPlayer = 0;
+            }
+            else {
+                currPlayer++;
+            }
+        }
+
+        function showPlayer() {
+            button.onInputUp.removeAll();
+            if (counter <= maxCards) {
+                choiseLabel.text = player[currPlayer].name + texts[11];
+                card.destroy();
+                card = cards.create(w / 2, h / 4.8, 'backCard');
+                card.anchor.setTo(0.5, 0.5);
+                var hoehe = h / 2.5
+                card.width = hoehe / 1.5;
+                card.height = h / 2.5;
+                button.onInputUp.add(cardGame);
+            }
+            else {
+
+                choiseLabel.text = texts[10];
+                button.onInputUp.removeAll();
+                button.onInputUp.add(endGame);
+            }
+
+        }
+
+        function endGame() {
+            var currPlayer = localStorage.getItem('currPlayer');
+            currPlayer++;
+            if (currPlayer >= parseInt(localStorage.getItem('playercount'), 10)) {
+                currPlayer = 0;
+            }
+            for (var i = 0; i < player.length; i++) {
+                localStorage.setItem('playerdrinks' + i, player[i].drinkcount);
+            }
+            localStorage.setItem('currPlayer', currPlayer);
+            if (fromMainGame == 1) {
+                localStorage.setItem('newGame', 0);
+            	document.location.href = "mainGame.html";
+            }
+            else {
+                document.location.href = "miniSpielWaehlen.html";
+            }
+        }
+
+        function cardGame() {
+            increasePlayer();
+            drink_label.text = 'Karte ' + counter + '/' + maxCards;
+            randomNumber = Math.floor(Math.random() * 32);
+            if (cardArray[randomNumber].used == true) {
+                while (cardArray[randomNumber].used == true) {
+                    randomNumber = Math.floor(Math.random() * 32);
+                }
+            }
+            card.destroy();
+            card = cards.create(w / 2, h / 4.8, cardArray[randomNumber].image);
+            card.anchor.setTo(0.5, 0.5);
+            cardArray[randomNumber].used = true;
+            var hoehe = h / 2.5
+            card.width = hoehe / 1.5;
+            card.height = h / 2.5;
+            if (isKings == 1) {
+                if (cardArray[randomNumber].value == 7) {
+                    choiseLabel.text = texts[12];
+                }
+                else if (cardArray[randomNumber].value == 8) {
+                    choiseLabel.text = texts[13];
+                }
+                else if (cardArray[randomNumber].value == 9) {
+                    choiseLabel.text = texts[14];
+                }
+                else if (cardArray[randomNumber].value == 10) {
+                    choiseLabel.text = texts[15];
+                }
+                else if (cardArray[randomNumber].value == 11) {
+                    choiseLabel.text = texts[16];
+                }
+                else if (cardArray[randomNumber].value == 12) {
+                    choiseLabel.text = texts[17];
+                }
+                else if (cardArray[randomNumber].value == 13) {
+                    choiseLabel.text = texts[18];
+                }
+                else if (cardArray[randomNumber].value == 14) {
+                    choiseLabel.text = texts[19];
+                    for (var i = 0; i < player.length; i++) {
+                        player[i].drinkcount++;
+                    }
+                }
+            }
+            else {
+                if (cardArray[randomNumber].value % 2 == 0) {
+                    if (cardArray[randomNumber].value == 12) {
+                        choiseLabel.text = texts[1];
+                    }
+                    else if (cardArray[randomNumber].value == 14) {
+                        choiseLabel.text = texts[2];
+                    }
+                    else {
+                        choiseLabel.text = texts[3] + (cardArray[randomNumber].value - 6) + texts[4];
+                        player[currPlayer].drinkcount += cardArray[randomNumber].value - 6;
+                    }
+                }
+                else {
+                    if (cardArray[randomNumber].value == 11) {
+                        choiseLabel.text = texts[5];
+                    }
+                    else if (cardArray[randomNumber].value == 13) {
+                        choiseLabel.text = texts[6];
+                    }
+                    else if (cardArray[randomNumber].value == 7) {
+                        choiseLabel.text = texts[7];
+                    }
+                    else {
+                        choiseLabel.text = texts[8] + (cardArray[randomNumber].value - 6) + texts[9];
+                    }
+                }
+            }
+
+
+            counter++;
+
+            button.onInputUp.removeAll();
+            button.onInputUp.add(showPlayer);
+        }
+
+    </script>
+
+</body>
+</html>

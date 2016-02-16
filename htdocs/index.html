@@ -1,0 +1,105 @@
+﻿<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>Tomade</title>
+    <script type="text/javascript" src="js/phaser.min.js"></script>
+    <script type="text/javascript" src="js/files.js"></script>
+    <script type="text/javascript" charset="utf-8" src="cordova.js"></script>
+    <style type="text/css">
+        body {
+            margin: 0;
+        }
+    </style>
+</head>
+<body>
+
+    <script type="text/javascript">
+
+	  	var w = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
+        var h = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight
+        var game = new Phaser.Game(w, h, Phaser.AUTO, '', { preload: preload, create: create, update: update });
+        var logo;
+        var counter = 0;
+
+        //Sprachen
+        var language = 'en-En';
+        var texts;
+        var timer;
+        var fontsize = h / 16;
+        var isSmartphone = false;
+
+        document.addEventListener("deviceready", onDeviceReady, false);
+
+        function onDeviceReady() {
+            isSmartphone = true;
+            navigator.globalization.getPreferredLanguage(gotLanguage, LanguageError);
+            checkIfFileExists('options.txt', false);
+        }
+
+        function gotLanguage(languageData) {
+            var code = languageData.value;
+            language = code.split("-")[0];
+        }
+
+        function LanguageError() {
+            alert('languageError');
+        }
+
+        function readFinished() { }
+
+      
+
+        function preload() {
+            loadLanguage();
+            game.stage.backgroundColor = '#9FD54E';
+            game.load.image('logo', 'assets/Tomade.png');
+        }
+
+        function loadLanguage() {
+            game.load.json('de', 'assets/Daten/Languages/index/german.json');
+            game.load.json('en', 'assets/Daten/Languages/index/english.json');
+        }
+
+        function create() {
+            logo = game.add.image(game.world.centerX, game.world.centerY, 'logo');
+            logo.anchor.set(0.5);
+            var scale = game.width / logo.width;
+            logo.width = logo.width * scale;
+            logo.height = logo.height * scale;
+            timer = game.time.create(false);
+            timer.loop(2000, tick, this);
+            timer.start();
+        }
+
+        function tick() {
+            if (!exist&&isSmartphone) {
+                write('options.txt', 'mute:0');
+            }
+            if (counter == 1) {
+                localStorage.setItem('language', language)
+                document.location.href = 'hauptmenue.html';
+            }
+            else {
+                counter++;
+                logo.visible = false;
+                if (language == 'de') {
+                    texts = game.cache.getJSON('de');
+                }
+                else {
+                    texts = game.cache.getJSON('en');
+                }
+                var text = game.add.text(game.world.centerX*1, game.world.centerY, texts[0], { font: '150% Arial', fill: '#FFFFFF', align: 'center', wordWrap: 'true', wordWrapWidth: w / 1.1 });
+                text.fontSize = fontsize;
+                text.anchor.set(0.5);
+                game.stage.backgroundColor = '#000000';
+            }
+        }
+
+        function update() {
+        }
+
+    </script>
+
+</body>
+</html>

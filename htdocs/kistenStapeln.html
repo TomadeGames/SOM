@@ -1,0 +1,352 @@
+﻿<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>Kisten stapeln</title>
+    <script type="text/javascript" src="js/phaser.min.js"></script>
+    <script type="text/javascript" charset="utf-8" src="cordova.js"></script>
+    <style type="text/css">
+        body {
+            margin: 0;
+        }
+    </style>
+</head>
+<body>
+    <script type="text/javascript">
+        //control
+        var w = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
+        var h = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight
+        var fromMainGame = 0;
+        var language = '';
+        var fontsize = h / 16;
+        var texts;
+
+        //Konstanten
+        var crateWidth = w / 6;
+        var crateHeight = h / 5;
+        var crateStartPosX = w - w / 1.1;
+        var crateStartPosY = h / 3;
+        var middleLane = h / 2;
+        var bottomLine = w - w / 12;
+        var collisionTollerance = 5;
+        var gravityVelocity = 0.015;
+        var leftSlideSpeed = 0.2;
+        var highestLine = w - w / 3;
+        var losingTollerance = 12;
+        var bounceTime = 4;
+        var balanceTollerance = 30;
+
+        //layerGroups
+        var backgroundLayer;
+        var crateLayer;
+        var foregroundLayer;
+
+        //Images
+        var crates = [];
+        var targetImage;
+        var popUp;
+
+        //Texts
+        var crateCounter;
+        var popUpText;
+
+        //PLayer
+        var player = [];
+        var currentPlayer = 0;
+
+        //Steuerung
+        var crateId = 0;
+        var currentCrate;
+        var movement;
+        var bounceCounter;
+        var balance = 0;
+        var crateCount = 0;
+        var rotationcounter = 0;
+        var gameState = -1;      //-1 runde Startet, 0 Kiste ablegen, 1 Kiste fällt, 2 Kiste richtig anordnen (nach oben verschieben), 3 Bild scorllen, 4 ende, 5 Rundenende, 6 Gameende
+        var game = new Phaser.Game(w, h, Phaser.AUTO, '', { preload: preload, create: create, update: update });
+
+        document.addEventListener("deviceready", onDeviceReady, false);
+
+        function onDeviceReady() {
+            document.addEventListener("backbutton", onBackKeyDown, false);
+            window.plugins.insomnia.keepAwake();
+            isSmartphone = true;
+        }
+
+        function onBackKeyDown() {
+
+        }
+
+        function loadLanguage() {
+            language = localStorage.getItem('language');
+            fromMainGame = localStorage.getItem('kastriert');
+            if (language == 'de') {
+                game.load.json('texts', 'assets/Daten/Languages/kistenStapeln/german.json');
+            }
+            else {
+                game.load.json('texts', 'assets/Daten/Languages/kistenStapeln/english.json');
+            }
+        }
+
+        function preload() {
+            //Daten
+            loadLanguage();
+            playerCount = parseInt(localStorage.getItem('playercount'), 10);
+            for (var i = 0; i < playerCount; i++) {
+                player.push({ name: localStorage.getItem('playername' + i), drinkcount: localStorage.getItem('playerdrinks' + i) })
+            }
+            currentPlayer = parseInt(localStorage.getItem('currPlayer'), 10);
+            //Images
+            game.load.image('background', 'assets/Hintergruende/Himmel.png')
+            game.load.image('crate', 'assets/GUI/KistenStapeln/Bierkiste.png');
+            game.load.image('target', 'assets/GUI/KistenStapeln/Ziel.png');
+            game.load.image('playerPopUp', 'assets/GUI/PopUp/PopUp400x300.png');
+        }
+
+        function create() {
+            texts = game.cache.getJSON('texts');
+            var fontstyle = { font: '150% Arial', fill: '#000', align: 'center', wordWrap: 'true', wordWrapWidth: w / 1.5 };
+
+            backgroundLayer = game.add.group();
+            crateLayer = game.add.group();
+            foregroundLayer = game.add.group();
+
+            var backgroundImage = backgroundLayer.create(0, 0, 'background');
+            backgroundImage.width = w;
+            backgroundImage.height = h;
+
+
+            targetImage = backgroundLayer.create(w, h, 'target');
+            targetImage.height = h;
+            targetImage.width = w- bottomLine;
+            targetImage.rotation = Math.PI;
+            
+            crateCounter = game.add.text(w - w / 1.02, h / 1.1, texts[0] + crateCount, { font: '200% Arial', fill: '#000', align: 'center' });
+            crateCounter.rotation = -Math.PI / 2;
+
+
+            popUp = foregroundLayer.create(w / 2, h / 2, 'playerPopUp');
+            popUp.width = h / 1.3;
+            popUp.height = w / 3;
+            popUp.anchor.set(0.5);
+            popUp.rotation = -Math.PI / 2;
+
+            popUpText = game.add.text(popUp.x, popUp.y, player[currentPlayer].name + texts[1], { font: '400% Arial', fill: '#000', align: 'center' });
+            popUpText.anchor.set(0.5);
+            popUpText.rotation = -Math.PI / 2;
+
+            game.input.onDown.addOnce(startTurn);
+        }
+
+        function addCrate() {
+            crates.push({ image: crateLayer.create(crateStartPosX, crateStartPosY, 'crate'), id: crateId, speed: 0, ySpeed: 0, movable: false });
+            crateId++;
+            currentCrate = crates[crates.length - 1];
+            currentCrate.image.width = crateWidth;
+            currentCrate.image.height = crateHeight;
+            currentCrate.image.anchor.set(0.5);
+            currentCrate.image.rotation = -Math.PI / 2;
+            currentCrate.image.inputEnabled = true;
+            currentCrate.image.input.enableDrag(true);
+            currentCrate.image.events.onDragStop.addOnce(onCrateDragStop, this);
+            crateCount++;
+            crateCounter.text = texts[0] +"" + crateCount;
+        }
+
+
+        function onCrateDragStop(sprite, pointer) {
+            gameState = 0;
+            currentCrate.movable = true;
+            currentCrate.image.inputEnabled = false;
+        }
+
+        function getCollision(currentBottemLine, targetTopLine) {
+            if (currentBottemLine < targetTopLine + collisionTollerance) {
+                return true;
+            }
+            return false;
+        }
+
+        function getCollisonPoints(crate) {
+
+            var topLeft = { X: crate.image.x - crate.image.height / 2, Y: crate.image.y - crate.image.width / 2 };
+            var topLeftX = crate.image.x - crate.image.height / 2;
+            var topLeftY = crate.image.y - crate.image.width / 2;
+
+            var topRight = { X: crate.image.x + crate.image.height / 2, Y: crate.image.y - crate.image.width / 2 };
+            var topRightX = crate.image.x + crate.image.height / 2;
+            var topRightY = crate.image.y - crate.image.width / 2;
+
+            var bottomLeft = { X: crate.image.x - crate.image.height / 2, Y: crate.image.y + crate.image.width / 2 };
+            var bottomLeftX = crate.image.x - crate.image.height / 2;
+            var bottomLeftY = crate.image.y + crate.image.width / 2;
+
+            var bottomRight = { X: crate.image.x + crate.image.height / 2, Y: crate.image.y + crate.image.width / 2 }
+            var bottomRightX = crate.image.x + crate.image.height / 2;
+            var bottomRightY = crate.image.y + crate.image.width / 2;
+
+            return { topLeft: topLeft, topRight: topRight, bottomLeft: bottomLeft, bottomRight: bottomRight };
+        }
+
+        function increasePlayer() {
+            if (currentPlayer == player.length - 1) {
+                currentPlayer = 0;
+            }
+            else {
+                currentPlayer++;
+            }
+        }
+
+        function endTurn() {
+            increasePlayer();
+            popUp.visible = true;
+            popUpText.text = player[currentPlayer].name + texts[1];
+            popUpText.visible = true;
+            game.input.onDown.addOnce(startTurn);
+        }
+
+        function startTurn() {
+            popUp.visible = false;
+            popUpText.visible = false;
+            addCrate();
+            gameState = -1;
+        }
+
+        function exit() {
+            if (fromMainGame == 1) {
+                localStorage.setItem('currPlayer', currentPlayer);
+                localStorage.setItem('playerdrinks' + currentPlayer, parseInt(player[currentPlayer].drinkcount, 10) + parseInt(crateCount,10));
+                document.location.href = 'mainGame.html';
+            }
+            else {
+                document.location.href = "miniSpielWaehlen.html";
+            }
+        }
+
+        function moveAllLeft(amount) {
+            targetImage.x += amount;
+            for (var i = 0; i < crates.length; i++) {
+                crates[i].image.x += amount;
+            }
+        }
+
+        function update() {
+            var elapsedGameTime = game.time.elapsed;
+            if (gameState >= 0) {
+                if (crates.length > 1) {
+                    targetTopLine = getCollisonPoints(crates[crates.length - 2]).bottomLeft.X;
+                }
+                else {
+                    targetTopLine = bottomLine;
+                }
+            }
+            if (gameState != -1) {
+                var targetTopLine;
+                var currentBottemLine = getCollisonPoints(currentCrate).bottomRight.X;
+            }
+            if (gameState == 0) {
+                rotationcounter = 0;
+                if (currentBottemLine > targetTopLine - collisionTollerance + losingTollerance) {
+                    popUp.visible = true;
+                    if (fromMainGame == 1) {
+                        popUpText.text = player[currentPlayer].name + texts[2] + crateCount;
+                    }
+                    else {
+                        popUpText.text = texts[2] + crateCount;
+                    }
+                    popUpText.visible = true;
+                    game.input.onDown.addOnce(exit);
+                    gameState = 8;
+                }
+                else {
+                    gameState = 1;
+                    bounceCounter = bounceTime;
+                }
+            }
+            else if (gameState == 1) {  //Kiste fällt
+
+                //Beschleunigen
+                currentCrate.speed += gravityVelocity;
+
+                //Bewegen
+                currentCrate.image.x += currentCrate.speed * elapsedGameTime;
+                if (currentBottemLine > targetTopLine + collisionTollerance) {
+                    gameState = 2;
+                }
+            }
+            else if (gameState == 2) {  //bouncing (Kiste richtig platzieren)
+                var distance = targetTopLine - currentBottemLine ;
+                currentCrate.image.x += distance / bounceCounter;
+
+                bounceCounter--;
+                if (bounceCounter == 0) {
+                    movement = (middleLane - currentCrate.image.y) * (crates.length);
+                    balance += movement;
+                    gameState = 3;
+                }
+            }
+            else if (gameState == 3) {  //Kiste in richtung balance drehen
+                rotationcounter++;
+                for (var i = 0; i < crates.length; i++) {
+                    crates[i].image.rotation += movement / 2000;
+                }
+                if (rotationcounter >= 7) {
+                    gameState = 4;
+                }
+            }
+            else if (gameState == 4) {  //Prüfen ob fallen
+                if (balance > balanceTollerance || balance < -balanceTollerance) {
+                    for (var i = 0; i < crates.length; i++) {
+                        crates[i].speed = 0;
+                    }
+                    popUp.visible = true;
+                    if (fromMainGame == 1) {
+                        popUpText.text = player[currentPlayer].name + texts[2] + crateCount;
+                    }
+                    else {
+                        popUpText.text = texts[2] + crateCount;
+                    }
+                    popUpText.visible = true;
+                    game.input.onDown.addOnce(exit);
+                    gameState = 8;
+                }
+                else {
+                    gameState = 5;
+                }
+            }
+            else if (gameState == 5) {  //Move left
+                if (crates.length > 2) {
+                    if (crates[crates.length - 2].image.x < highestLine) {
+                        moveAllLeft(leftSlideSpeed * elapsedGameTime);
+                    }
+                    else {
+                        gameState = 6;
+                    }
+                }
+                else {
+                    gameState = 6;
+                }
+            }
+            else if (gameState == 6) { 
+                gameState = 7;
+                endTurn();
+            }
+            else if (gameState == 8) {  //Fallen
+                for (var i = 0; i < crates.length; i++) {
+                    var cra = crates[i];
+                    cra.speed -= gravityVelocity * 2;
+                    if (cra.image.rotation - (-Math.PI / 2) != 0) {
+                        cra.ySpeed -= gravityVelocity / (cra.image.rotation - (-Math.PI / 2));
+                    }
+
+                    cra.image.x -= cra.speed;
+                    cra.image.y += cra.ySpeed;
+                    cra.image.rotation -= cra.ySpeed/200;
+                }
+            }
+        }
+
+    </script>
+
+</body>
+</html>

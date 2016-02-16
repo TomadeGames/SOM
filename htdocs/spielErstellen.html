@@ -1,0 +1,104 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title>Game</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><!-- , user-scalable=no -->
+    <!--<link rel="stylesheet" href="http://code.jquery.com/mobile/1.4.5/jquery.mobile.structure-1.4.5.min.css" />-->
+    <link rel="stylesheet" href="styles/jquery.mobile-1.4.5.min.css"/>
+    <link rel="stylesheet" href="styles/jquery.mobile.icons.min.css" />
+    <link rel="stylesheet" href="styles/smooth_beige_theme.min.css" />
+    <link rel="stylesheet" type="text/css" href="styles/css.css" />
+
+    <!--<script src="http://code.jquery.com/jquery-1.11.1.min.js"></script>
+    <script src="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script> -->
+
+    <script type="text/javascript" src="js/jquery-2.1.1.min.js"></script>
+    <script type="text/javascript" src="js/jquery.mobile-1.4.5.min.js"></script>
+    <script type="text/javascript" charset="utf-8" src="cordova.js"></script>
+    <script type="text/javascript" src="js/playerAdd.js" ></script>
+    <script type="text/javascript" src="js/sounds.js"></script>
+    <script type="text/javascript" src="js/files.js"></script>
+</head>
+<body>
+    <div data-role="page" id="pageone" data-title="Startseite Saufomat">
+        <div data-role="header">
+            <h1 id="h01_1">Spieler anlegen</h1>
+        </div>
+        <div id ="wrapper">
+            <div data-role="main" class="ui-content">
+                <div id="marginBottom">
+                    <div class="center-wrapper">
+                        <a id="addButton" class="blueButton" href="#" data-role="button" data-inline="true" data-icon="plus" data-iconpos="bottom">neuer Spieler</a>
+                        <a id="submitButton" class="greenButton" href="#" data-role="button" data-inline="true" data-icon="check" data-iconpos="bottom">Starten!</a>  
+                    </div>
+                </div>
+                <div id="colset" data-role="collapsibleset" data-collapsed-icon="carat-r" data-expanded-icon="edit">
+                    <div id="colPlayer0" class="colPlayerclass" data-role="collapsible" data-collapsed="false">
+                        <h3 id="colH3">Player 1</h3>
+                        <div id="colContent">
+                            <form method="post" action="demoform.asp">
+                                <div data-role="fieldcontain">
+
+                                    <div id="marginBottom">
+                                        <label for="name">Name:</label>
+                                    </div>
+                                    <input type="text" name="name" id="name" placeholder="Wie heißt du?">
+
+                                    <div id="marginBottom">
+                                        <label for="weight">Gewicht (in kg):</label>
+                                    </div>
+                                    <input type="number" class="numbersOnly" name="weight" id="weight" value="70">
+
+                                    <div id="marginBottom" class="genderLabel">
+                                        <div id="hideInput">
+                                            <input type="text" name="hiddenInput" id="hiddenInput" placeholder="Wie" value="m">
+                                        </div>
+                                        <label for="gender">Geschlecht: <b>männlich</b></label>
+                                    </div>
+                                    <div id="marginBottom" class="genderButtonMargin">
+                                        <div class="center-wrapper">
+                                            <a id="maleButton" class="genderButton blueButton" href="#" data-role="button" data-inline="true">männlich</a>
+                                            <a id="femaleButton" class="genderButton" href="#" data-role="button" data-inline="true">weiblich</a>
+                                        </div>
+                                    </div>
+                                    <div class="center-wrapper">
+                                        <a id="deleteButton" class="redButton" href="#pagetwo" data-role="button" data-inline="true" data-icon="delete" data-iconpos="bottom" data-rel="dialog" data-transition="slidedown">Spieler löschen</a>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                <div data-role="popup" id="popup" class="ui-content">
+                    <p>_</p>
+                </div>            
+            </div>
+        </div>
+        <!--<div id="dummyKeyboard" ></div>-->
+        <div id="toTopGroup" data-role="controlgroup" data-type="vertical" data-mini="false" >
+            <a id="lastBtn"  href="#" data-role="button" data-icon="carat-u" data-iconpos="notext">up</a>
+            <a id="nextBtn" href="#" data-role="button" data-icon="carat-d" data-iconpos="notext">down</a>
+        </div>
+        
+        <div id="nav" data-role="controlgroup" data-type="horizontal" data-mini="true" >
+            <a id="topBtn" href="#" data-role="button" data-icon="home" data-iconpos="notext">last</a>
+            <a id="downBtn" href="#" data-role="button" data-icon="arrow-d" data-iconpos="notext">next</a>
+        </div>
+        
+        <div id="spacer"></div>
+    </div>
+    <div data-role="page" id="pagetwo">
+        <div data-role="main2" class="ui-content">
+            <div class="center-wrapper">
+                <div id="marginBottom">
+                    <h1 id="deleteConfirmation">Spieler x wirklich löschen?</h1>
+                </div>
+                <a id="deleteDialog" href="index.html" data-role="button" data-inline="true" data-icon="check" data-iconpos="bottom" data-rel="back" data-transition="slidedown">löschen</a>
+
+                <a id="cancelDialog" href="index.html" data-role="button" data-inline="true" data-icon="delete" data-iconpos="bottom" data-rel="back" data-transition="slidedown">abbrechen</a>
+            </div>
+        </div>
+    </div>
+</body>
+</html> <!--id="greenButton" -->

@@ -1,0 +1,688 @@
+﻿<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>Busfahrer</title>
+    <script type="text/javascript" src="js/phaser.min.js"></script>
+    <script type="text/javascript" src="js/files.js"></script>
+    <script type="text/javascript" src="js/sounds.js"></script>
+    <script type="text/javascript" charset="utf-8" src="cordova.js"></script>
+    <style type="text/css">
+        body {
+            margin: 0;
+        }
+    </style>
+</head>
+<body>
+
+    <script type="text/javascript">
+
+        var w = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth, h = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
+        var randomNumber = 0;
+        var game = new Phaser.Game(w, h, Phaser.AUTO, '', { preload: preload, create: create, update: update });
+        var isSmartphone = false;
+        var card_1, card_2, card_3, card_4, card_5;
+        var card_1_value, card_2_value, card_3_value, card_4_value, card_5_value;
+        var click = true;
+        var frage, drinkcount = 0, hoehe = h / 3.5;
+        var texts;
+        var language;
+        var fromMainGame;
+        var buttonTextLeft;
+        var buttonTextRight;
+        var fontsize = h / 16;
+
+        var cardArray = [
+                            { name: 'ka_7', colour: 'red', value: 7, used: 'false', image: '1' },
+                            { name: 'ka_8', colour: 'red', value: 8, used: 'false', image: '2' },
+                            { name: 'ka_9', colour: 'red', value: 9, used: 'false', image: '3' },
+                            { name: 'ka_10', colour: 'red', value: 10, used: 'false', image: '4' },
+                            { name: 'ka_bu', colour: 'red', value: 11, used: 'false', image: '5' },
+                            { name: 'ka_da', colour: 'red', value: 12, used: 'false', image: '6' },
+                            { name: 'ka_koe', colour: 'red', value: 13, used: 'false', image: '7' },
+                            { name: 'ka_ass', colour: 'red', value: 14, used: 'false', image: '8' },
+
+                            { name: 'he_7', colour: 'red', value: 7, used: 'false', image: '9' },
+                            { name: 'he_8', colour: 'red', value: 8, used: 'false', image: '10' },
+                            { name: 'he_9', colour: 'red', value: 9, used: 'false', image: '11' },
+                            { name: 'he_10', colour: 'red', value: 10, used: 'false', image: '12' },
+                            { name: 'he_bu', colour: 'red', value: 11, used: 'false', image: '13' },
+                            { name: 'he_da', colour: 'red', value: 12, used: 'false', image: '14' },
+                            { name: 'he_koe', colour: 'red', value: 13, used: 'false', image: '15' },
+                            { name: 'he_ass', colour: 'red', value: 14, used: 'false', image: '16' },
+
+                            { name: 'pi_7', colour: 'black', value: 7, used: 'false', image: '17' },
+                            { name: 'pi_8', colour: 'black', value: 8, used: 'false', image: '18' },
+                            { name: 'pi_9', colour: 'black', value: 9, used: 'false', image: '19' },
+                            { name: 'pi_10', colour: 'black', value: 10, used: 'false', image: '20' },
+                            { name: 'pi_bu', colour: 'black', value: 11, used: 'false', image: '21' },
+                            { name: 'pi_da', colour: 'black', value: 12, used: 'false', image: '22' },
+                            { name: 'pi_koe', colour: 'black', value: 13, used: 'false', image: '23' },
+                            { name: 'pi_ass', colour: 'black', value: 14, used: 'false', image: '24' },
+
+                            { name: 'kr_7', colour: 'black', value: 7, used: 'false', image: '25' },
+                            { name: 'kr_8', colour: 'black', value: 8, used: 'false', image: '26' },
+                            { name: 'kr_9', colour: 'black', value: 9, used: 'false', image: '27' },
+                            { name: 'kr_10', colour: 'black', value: 10, used: 'false', image: '28' },
+                            { name: 'kr_bu', colour: 'black', value: 11, used: 'false', image: '29' },
+                            { name: 'kr_da', colour: 'black', value: 12, used: 'false', image: '30' },
+                            { name: 'kr_koe', colour: 'black', value: 13, used: 'false', image: '31' },
+                            { name: 'kr_ass', colour: 'black', value: 14, used: 'false', image: '32' }
+        ]
+
+        function loadLanguage() {
+            language = localStorage.getItem('language');
+            fromMainGame = localStorage.getItem('kastriert');
+            if (language == 'de') {
+                game.load.json('texts', 'assets/Daten/Languages/busfahren/german.json');
+            }
+            else {
+                game.load.json('texts', 'assets/Daten/Languages/busfahren/english.json');
+            }
+        }
+
+        function preload() {
+            //Daten
+            loadLanguage();
+
+            //Karten
+            game.load.image('1', 'assets/Karten/karo7.png');
+            game.load.image('2', 'assets/Karten/karo8.png');
+            game.load.image('3', 'assets/Karten/karo9.png');
+            game.load.image('4', 'assets/Karten/karo10.png');
+            game.load.image('5', 'assets/Karten/karoBube.png');
+            game.load.image('6', 'assets/Karten/karoDame.png');
+            game.load.image('7', 'assets/Karten/karoKoenig.png');
+            game.load.image('8', 'assets/Karten/karoAss.png');
+            game.load.image('9', 'assets/Karten/karo7.png');
+            game.load.image('10', 'assets/Karten/herz8.png');
+            game.load.image('11', 'assets/Karten/herz9.png');
+            game.load.image('12', 'assets/Karten/herz10.png');
+            game.load.image('13', 'assets/Karten/herzBube.png');
+            game.load.image('14', 'assets/Karten/herzDame.png');
+            game.load.image('15', 'assets/Karten/herzKoenig.png');
+            game.load.image('16', 'assets/Karten/herzAss.png');
+            game.load.image('17', 'assets/Karten/pik7.png');
+            game.load.image('18', 'assets/Karten/pik8.png');
+            game.load.image('19', 'assets/Karten/pik9.png');
+            game.load.image('20', 'assets/Karten/pik10.png');
+            game.load.image('21', 'assets/Karten/pikBube.png');
+            game.load.image('22', 'assets/Karten/pikDame.png');
+            game.load.image('23', 'assets/Karten/pikKoenig.png');
+            game.load.image('24', 'assets/Karten/pikAss.png');
+            game.load.image('25', 'assets/Karten/kreuz7.png');
+            game.load.image('26', 'assets/Karten/kreuz8.png');
+            game.load.image('27', 'assets/Karten/kreuz9.png');
+            game.load.image('28', 'assets/Karten/kreuz10.png');
+            game.load.image('29', 'assets/Karten/kreuzBube.png');
+            game.load.image('30', 'assets/Karten/kreuzDame.png');
+            game.load.image('31', 'assets/Karten/kreuzKoenig.png');
+            game.load.image('32', 'assets/Karten/kreuzAss.png');
+            game.load.image('backCard', 'assets/Karten/rueckseite.png');
+
+            //Button
+            game.load.image('redButton', 'assets/GUI/Button/Busfahren/Rot.png');
+            game.load.image('blackButton', 'assets/GUI/Button/Busfahren/Schwarz.png');
+            game.load.image('highButton', 'assets/GUI/Button/Busfahren/Hoeher.png');
+            game.load.image('lowButton', 'assets/GUI/Button/Busfahren/Tiefer.png');
+            game.load.image('betweenButton', 'assets/GUI/Button/Busfahren/Dazwischen.png');
+            game.load.image('notBetweenButton', 'assets/GUI/Button/Busfahren/NichtDazwischen.png');
+            game.load.image('againButton', 'assets/GUI/Button/Busfahren/Nochmal.png');
+            game.load.image('notAgainButton', 'assets/GUI/Button/Busfahren/NichtNochmal.png');
+            game.load.image('assButton', 'assets/GUI/Button/Busfahren/Ass.png');
+            game.load.image('noAssButton', 'assets/GUI/Button/Busfahren/KeinAss.png');
+
+            //PopUp
+            game.load.image('popUp', 'assets/GUI/PopUp/PopUp400x300.png');
+
+            //Background
+            game.load.image('wuerfelFeld', 'assets/Hintergruende/Tepich.png');
+        }
+
+        function create() {
+            texts = game.cache.getJSON('texts');
+            var background = game.add.sprite(0, 0, 'wuerfelFeld');
+            background.width = w;
+            background.height = h;
+
+            cards = game.add.group();
+
+            card_1 = cards.create(1 * (w / 5) - (w / 6.5), h / 4, 'backCard');
+            card_1.anchor.setTo(0, 0.5);
+            card_2 = cards.create(2 * (w / 5) - (w / 6.5), h / 4, 'backCard');
+            card_2.anchor.setTo(0, 0.5);
+            card_3 = cards.create(3 * (w / 5) - (w / 6.5), h / 4, 'backCard');
+            card_3.anchor.setTo(0, 0.5);
+            card_4 = cards.create(4 * (w / 5) - (w / 6.5), h / 4, 'backCard');
+            card_4.anchor.setTo(0, 0.5);
+            card_5 = cards.create(5 * (w / 5) - (w / 6.5), h / 4, 'backCard');
+            card_5.anchor.setTo(0, 0.5);
+
+            popUpFenster = game.add.sprite(w / 2, h / 1.9, 'popUp');
+            popUpFenster.anchor.setTo(0.5, 0.5);
+            popUpFenster.width = w / 1.1;
+            popUpFenster.height = h / 2.4;
+
+            var buttonWidth = w/4;
+            var buttonHeight = w/8;
+            buttonRed = game.add.button(w / 2 - w / 10, h - h / 7.5, 'redButton', leftClick, this, 2, 1, 0);
+            buttonRed.anchor.setTo(0.5, 0.5);
+            buttonRed.width = buttonWidth;
+            buttonRed.height = buttonHeight;
+            buttonRed.x = w / 2 - buttonRed.width/2;
+            buttonRed.visible = false;
+            buttonBlack = game.add.button(w / 2 + w / 10, h - h / 7.5, 'blackButton', rightClick, this, 2, 1, 0);
+            buttonBlack.anchor.setTo(0.5, 0.5);
+            buttonBlack.width = buttonWidth;
+            buttonBlack.height = buttonHeight;
+            buttonBlack.x = w / 2 + buttonBlack.width/2;
+            buttonBlack.visible = false;
+            buttonHigh = game.add.button(w / 2 - w / 10, h - h / 7.5, 'highButton', leftClick, this, 2, 1, 0);
+            buttonHigh.anchor.setTo(0.5, 0.5);
+            buttonHigh.width = buttonWidth;
+            buttonHigh.height = buttonHeight;
+            buttonHigh.x = w / 2 - buttonRed.width / 2;
+            buttonHigh.visible = false;
+            buttonLow = game.add.button(w / 2 + w / 10, h - h / 7.5, 'lowButton', rightClick, this, 2, 1, 0);
+            buttonLow.anchor.setTo(0.5, 0.5);
+            buttonLow.width = buttonWidth;
+            buttonLow.height = buttonHeight;
+            buttonLow.x = w / 2 + buttonBlack.width / 2;
+            buttonLow.visible = false;
+            buttonBetween = game.add.button(w / 2 - w / 10, h - h / 7.5, 'betweenButton', leftClick, this, 2, 1, 0);
+            buttonBetween.anchor.setTo(0.5, 0.5);
+            buttonBetween.width = buttonWidth;
+            buttonBetween.height = buttonHeight;
+            buttonBetween.x = w / 2 - buttonRed.width / 2;
+            buttonBetween.visible = false;
+            buttonNotBetween = game.add.button(w / 2 + w / 10, h - h / 7.5, 'notBetweenButton', rightClick, this, 2, 1, 0);
+            buttonNotBetween.anchor.setTo(0.5, 0.5);
+            buttonNotBetween.width = buttonWidth;
+            buttonNotBetween.height = buttonHeight;
+            buttonNotBetween.x = w / 2 + buttonBlack.width / 2;
+            buttonNotBetween.visible = false;
+            buttonAgain = game.add.button(w / 2 - w / 10, h - h / 7.5, 'againButton', leftClick, this, 2, 1, 0);
+            buttonAgain.anchor.setTo(0.5, 0.5);
+            buttonAgain.width = buttonWidth;
+            buttonAgain.height = buttonHeight;
+            buttonAgain.x = w / 2 - buttonRed.width / 2;
+            buttonAgain.visible = false;
+            buttonNotAgain = game.add.button(w / 2 + w / 10, h - h / 7.5, 'notAgainButton', rightClick, this, 2, 1, 0);
+            buttonNotAgain.anchor.setTo(0.5, 0.5);
+            buttonNotAgain.width = buttonWidth;
+            buttonNotAgain.height = buttonHeight;
+            buttonNotAgain.x = w / 2 + buttonBlack.width / 2;
+            buttonNotAgain.visible = false;
+            buttonAss = game.add.button(w / 2 - w / 10, h - h / 7.5, 'assButton', leftClick, this, 2, 1, 0);
+            buttonAss.anchor.setTo(0.5, 0.5);
+            buttonAss.width = buttonWidth;
+            buttonAss.height = buttonHeight;
+            buttonAss.x = w / 2 - buttonRed.width / 2;
+            buttonAss.visible = false;
+            buttonNoAss = game.add.button(w / 2 + w / 10, h - h / 7.5, 'noAssButton', rightClick, this, 2, 1, 0);
+            buttonNoAss.anchor.setTo(0.5, 0.5);
+            buttonNoAss.width = buttonWidth;
+            buttonNoAss.height = buttonHeight;
+            buttonNoAss.x = w / 2 + buttonBlack.width / 2;
+            buttonNoAss.visible = false;
+
+            buttonTextLeft = game.add.text(buttonAss.x, buttonAss.y, texts[12], { font: '175% Arial', fill: '#fff', align: 'center', wordWrap: 'true', wordWrapWidth: buttonAgain.width});
+            buttonTextLeft.anchor.set(0.5, 0.5);
+            buttonTextLeft.fontSize = fontsize;
+
+            buttonTextRight = game.add.text(buttonNoAss.x, buttonNoAss.y, texts[13], { font: '175% Arial', fill: '#fff', align: 'center', wordWrap: 'true', wordWrapWidth: buttonAgain.width});
+            buttonTextRight.anchor.set(0.5, 0.5);
+            buttonTextRight.fontSize = fontsize;
+
+            drink_label = game.add.text(w - w / 5, h - h / 10, 'Drinks: 0', { font: '200% Arial', fill: '#fff', align: 'center' });
+            drink_label.fontSize = fontsize / 1.3;
+            if (isSmartphone) {
+                read('options.txt');
+            }
+
+            startMenu();
+
+        }
+
+        function update() {
+
+        }
+
+        document.addEventListener("deviceready", onDeviceReady, false);
+
+        function onDeviceReady() {
+            document.addEventListener("backbutton", onBackKeyDown, false);
+            window.plugins.insomnia.keepAwake();
+            isSmartphone = true;
+        }
+
+        function readFinished() {
+            if (readInput == 'mute:0') {
+                isMuted = false;
+            }
+            else {
+                isMuted = true;
+            }
+        }
+
+        function startMenu() {
+            drink_label.text = 'Drinks: ' + drinkcount;
+
+            frage = 1;
+
+            for (var i = 0; i < 32; i++) {
+                cardArray[i].used = false;
+            }
+
+            card_1_value = 0;
+            card_2_value = 0;
+            card_3_value = 0;
+            card_4_value = 0;
+            card_5_value = 0;
+
+            card_1.kill();
+            card_1 = cards.create(1 * (w / 5) - (w / 6.5), h / 6, 'backCard');
+            card_1.anchor.setTo(0, 0.5);
+            card_1.width = hoehe / 1.5;
+            card_1.height = hoehe;
+
+            card_2.kill();
+            card_2 = cards.create(2 * (w / 5) - (w / 6.5), h / 6, 'backCard');
+            card_2.anchor.setTo(0, 0.5);
+            card_2.width = hoehe / 1.5;
+            card_2.height = hoehe;
+
+            card_3.kill();
+            card_3 = cards.create(3 * (w / 5) - (w / 6.5), h / 6, 'backCard');
+            card_3.anchor.setTo(0, 0.5);
+            card_3.width = hoehe / 1.5;
+            card_3.height = hoehe;
+
+            card_4.kill();
+            card_4 = cards.create(4 * (w / 5) - (w / 6.5), h / 6, 'backCard');
+            card_4.anchor.setTo(0, 0.5);
+            card_4.width = hoehe / 1.5;
+            card_4.height = hoehe;
+
+            card_5.kill();
+            card_5 = cards.create(5 * (w / 5) - (w / 6.5), h / 6, 'backCard');
+            card_5.anchor.setTo(0, 0.5);
+            card_5.width = hoehe / 1.5;
+            card_5.height = hoehe;
+
+            buttonRed.visible = true;
+            buttonBlack.visible = true;
+            buttonHigh.visible = false;
+            buttonLow.visible = false;
+            buttonBetween.visible = false;
+            buttonNotBetween.visible = false;
+            buttonAgain.visible = false;
+            buttonNotAgain.visible = false;
+            buttonAss.visible = false;
+            buttonNoAss.visible = false;
+
+            buttonRed.input.enabled = true;
+            buttonBlack.input.enabled = true;
+            buttonHigh.input.enabled = true;
+            buttonLow.input.enabled = true;
+            buttonBetween.input.enabled = true;
+            buttonNotBetween.input.enabled = true;
+            buttonAgain.input.enabled = true;
+            buttonNotAgain.input.enabled = true;
+            buttonAss.input.enabled = true;
+            buttonNoAss.input.enabled = true;
+            
+
+            buttonTextLeft.text = texts[12];
+            buttonTextRight.text = texts[13];
+            buttonTextLeft.fill = '#fff';
+
+            choiseLabel = game.add.text(w / 2, h / 1.9, texts[0], { font: '250% Arial', fill: '#000', align: 'center', wordWrap: 'true', wordWrapWidth: w / 1.5 });
+            choiseLabel.anchor.setTo(0.5, 0.5);
+            choiseLabel.fontSize = fontsize * 1.5;
+        }
+
+        function leftClick() {
+            if (frage == 1) {
+                redOrBlack('left');
+            }
+            else if (frage == 2) {
+                highOrLow('left');
+            }
+            else if (frage == 3) {
+                between('left');
+            }
+            else if (frage == 4) {
+                again('left');
+            }
+            else {
+                ass('left');
+            }
+        }
+
+        function rightClick() {
+            if (frage == 1) {
+                redOrBlack('right');
+            }
+            else if (frage == 2) {
+                highOrLow('right');
+            }
+            else if (frage == 3) {
+                between('right');
+            }
+            else if (frage == 4) {
+                again('right');
+            }
+            else {
+                ass('right');
+            }
+        }
+
+        function redOrBlack(pick) {
+            playAudio('/android_asset/www/assets/sounds/button.wav');
+            var x
+
+            buttonRed.input.enabled = false;
+            buttonBlack.input.enabled = false;
+
+            if (pick == 'left') {
+                x = 'red';
+            }
+            else {
+                x = 'black';
+            }
+
+            randomNumber = Math.floor(Math.random() * 32);
+            card_1.kill();
+            card_1 = cards.create(1 * (w / 5) - (w / 6.5), h / 6, cardArray[randomNumber].image);
+            card_1.anchor.setTo(0, 0.5);
+            cardArray[randomNumber].used = true;
+            card_1_value = cardArray[randomNumber].value;
+            card_1.width = hoehe / 1.5;
+            card_1.height = hoehe;
+
+            game.time.events.add(Phaser.Timer.SECOND * 1, function () {
+                choiseLabel.destroy();
+                if (cardArray[randomNumber].colour == x) {
+                    frage = 2;
+
+                    choiseLabel = game.add.text(w / 2, h / 1.9, texts[1], { font: '250% Arial', fill: '#000', align: 'center', wordWrap: 'true', wordWrapWidth: w / 1.5 });
+                    choiseLabel.anchor.setTo(0.5, 0.5);                    
+            		choiseLabel.fontSize = fontsize * 1.5;
+                    buttonRed.visible = false;
+                    buttonBlack.visible = false;
+                    buttonTextLeft.text = texts[14];
+                    buttonTextRight.text = texts[15];
+                    buttonHigh.visible = true;
+                    buttonLow.visible = true;
+                }
+                else {
+                    drinkcount += 1;
+
+                    trinken = game.add.text(w / 2, h / 1.9, texts[5], { font: '250% Arial', fill: '#000', align: 'center', wordWrap: 'true', wordWrapWidth: w / 1.5 });
+                    trinken.anchor.setTo(0.5, 0.5);
+                    trinken.fontSize = fontsize * 1.5;
+
+                    choiseLabel.destroy();
+
+                    game.time.events.add(Phaser.Timer.SECOND * 1.5, function () {
+                        trinken.destroy();
+                        startMenu();
+                    })
+                }
+            });
+        }
+
+        function highOrLow(pick) {
+            playAudio('/android_asset/www/assets/sounds/button.wav');
+            buttonHigh.input.enabled = false;
+            buttonLow.input.enabled = false;
+            randomNumber = Math.floor(Math.random() * 32);
+            if (cardArray[randomNumber].used == true) {
+                while (cardArray[randomNumber].used == true) {
+                    randomNumber = Math.floor(Math.random() * 32);
+                }
+            }
+
+            card_2.kill();
+            card_2 = cards.create(2 * (w / 5) - (w / 6.5), h / 6, cardArray[randomNumber].image);
+            card_2.anchor.setTo(0, 0.5);
+            cardArray[randomNumber].used = true;
+            card_2_value = cardArray[randomNumber].value;
+            card_2.width = hoehe / 1.5;
+            card_2.height = hoehe;
+            var y = card_1_value, z = card_2_value;
+            x = y - z;
+
+            choiseLabel.destroy();
+            game.time.events.add(Phaser.Timer.SECOND * 1, function () {
+                if ((x < 0 && pick == 'left') || (x > 0 && pick == 'right')) {
+                    frage = 3;
+
+                    choiseLabel = game.add.text(w / 2, h / 1.9, texts[2], { font: '250% Arial', fill: '#000', align: 'center', wordWrap: 'true', wordWrapWidth: w / 1.5 });
+                    choiseLabel.anchor.setTo(0.5, 0.5);
+            		choiseLabel.fontSize = fontsize * 1.5;
+
+                    buttonHigh.visible = false;
+                    buttonLow.visible = false;
+                    buttonTextLeft.text = texts[16];
+                    buttonTextRight.text = texts[17];
+                    buttonBetween.visible = true;
+                    buttonNotBetween.visible = true;
+                }
+                else {
+                    drinkcount += 2;
+
+                    trinken = game.add.text(w / 2, h / 1.9, texts[6], { font: '250% Arial', fill: '#000', align: 'center', wordWrap: 'true', wordWrapWidth: w / 1.5 });
+                    trinken.anchor.setTo(0.5, 0.5);
+                    trinken.fontSize = fontsize * 1.5;
+
+                    choiseLabel.destroy();
+
+                    game.time.events.add(Phaser.Timer.SECOND * 1.5, function () {
+                        trinken.destroy();
+
+                        startMenu();
+                    })
+                }
+            })
+        }
+
+        function between(pick) {
+            playAudio('/android_asset/www/assets/sounds/button.wav');
+            buttonBetween.input.enabled = false;
+            buttonNotBetween.input.enabled = false;
+            randomNumber = Math.floor(Math.random() * 32);
+            if (cardArray[randomNumber].used == true) {
+                while (cardArray[randomNumber].used == true) {
+                    randomNumber = Math.floor(Math.random() * 32);
+                }
+            }
+            card_3.kill();
+            card_3 = cards.create(3 * (w / 5) - (w / 6.5), h / 6, cardArray[randomNumber].image);
+            card_3.anchor.setTo(0, 0.5);
+            cardArray[randomNumber].used = true;
+            card_3_value = cardArray[randomNumber].value;
+            card_3.width = hoehe / 1.5;
+            card_3.height = hoehe;
+
+            var a = card_1_value, b = card_2_value, c = card_3_value;
+            var y
+            if (b < a) {
+                y = b;
+                b = a;
+                a = y;
+            }
+
+            var u = false, v = false;
+            if (c < b) {
+                u = true;
+            }
+            if (c > a) {
+                v = true;
+            }
+            choiseLabel.destroy();
+
+            game.time.events.add(Phaser.Timer.SECOND * 1, function () {
+                if ((u == true && v == true && pick == 'left') || (u == false && pick == 'right') ||
+                    (v == false && pick == 'right')) {
+                    frage = 4;
+
+                    choiseLabel = game.add.text(w / 2, h / 1.9, texts[3], { font: '250% Arial', fill: '#000', align: 'center', wordWrap: 'true', wordWrapWidth: w / 1.5 });
+                    choiseLabel.anchor.setTo(0.5, 0.5);
+            		choiseLabel.fontSize = fontsize * 1.5;
+
+                    buttonBetween.visible = false;
+                    buttonNotBetween.visible = false;
+                    buttonTextLeft.text = texts[18];
+                    buttonTextRight.text = texts[19];
+                    buttonAgain.visible = true;
+                    buttonNotAgain.visible = true;
+                }
+                else {
+                    drinkcount += 3;
+
+                    trinken = game.add.text(w / 2, h / 1.9, texts[7], { font: '250% Arial', fill: '#000', align: 'center', wordWrap: 'true', wordWrapWidth: w / 1.5 });
+                    trinken.anchor.setTo(0.5, 0.5);
+                    trinken.fontSize = fontsize * 1.5;
+
+                    choiseLabel.destroy();
+
+                    game.time.events.add(Phaser.Timer.SECOND * 1.5, function () {
+                        trinken.destroy();
+
+                        startMenu();
+                    })
+                }
+            })
+        }
+
+        function again(pick) {
+            playAudio('/android_asset/www/assets/sounds/button.wav');
+            buttonAgain.input.enabled = false;
+            buttonNotAgain.input.enabled = false;
+
+            randomNumber = Math.floor(Math.random() * 32);
+            if (cardArray[randomNumber].used == true) {
+                while (cardArray[randomNumber].used == true) {
+                    randomNumber = Math.floor(Math.random() * 32);
+                }
+            }
+            card_4.kill();
+            card_4 = cards.create(4 * (w / 5) - (w / 6.5), h / 6, cardArray[randomNumber].image);
+            card_4.anchor.setTo(0, 0.5);
+            cardArray[randomNumber].used = true;
+            card_4_value = cardArray[randomNumber].value;
+            card_4.width = hoehe / 1.5;
+            card_4.height = hoehe;
+
+            choiseLabel.destroy();
+
+            game.time.events.add(Phaser.Timer.SECOND * 1, function () {
+                if ((card_3_value == card_4_value && pick == 'left') ||
+                    (card_4_value != card_3_value && pick == 'right')) {
+                    frage = 5;
+
+                    choiseLabel = game.add.text(w / 2, h / 1.9, texts[4], { font: '250% Arial', fill: '#000', align: 'center', wordWrap: 'true', wordWrapWidth: w / 1.5 });
+                    choiseLabel.anchor.setTo(0.5, 0.5);
+            		choiseLabel.fontSize = fontsize * 1.5;
+
+                    buttonAgain.visible = false;
+                    buttonNotAgain.visible = false;
+                    buttonTextLeft.text = texts[20];
+                    buttonTextRight.text = texts[21];
+                    buttonTextLeft.fill = '#000';
+                    buttonAss.visible = true;
+                    buttonNoAss.visible = true;
+                }
+                else {
+                    drinkcount += 4;
+
+                    trinken = game.add.text(w / 2, h / 1.9, texts[8], { font: '250% Arial', fill: '#000', align: 'center', wordWrap: 'true', wordWrapWidth: w / 1.5 });
+                    trinken.anchor.setTo(0.5, 0.5);
+                    trinken.fontSize = fontsize * 1.5;
+
+                    choiseLabel.destroy();
+
+                    game.time.events.add(Phaser.Timer.SECOND * 1.5, function () {
+                        trinken.destroy();
+
+                        startMenu();
+                    })
+                }
+            })
+        }
+
+        function ass(pick) {
+            playAudio('/android_asset/www/assets/sounds/button.wav');
+            buttonAss.input.enabled = false;
+            buttonNoAss.input.enabled = false;
+            randomNumber = Math.floor(Math.random() * 32);
+            if (cardArray[randomNumber].used == true) {
+                while (cardArray[randomNumber].used == true) {
+                    randomNumber = Math.floor(Math.random() * 32);
+                }
+            }
+            card_5.kill();
+            card_5 = cards.create(5 * (w / 5) - (w / 6.5), h / 6, cardArray[randomNumber].image);
+            card_5.anchor.setTo(0, 0.5);
+            cardArray[randomNumber].used = true;
+            card_5_value = cardArray[randomNumber].value;
+            card_5.width = hoehe / 1.5;
+            card_5.height = hoehe;
+
+            choiseLabel.destroy();
+
+            game.time.events.add(Phaser.Timer.SECOND * 1, function () {
+                if ((card_5_value == 14 && pick == 'left') ||
+                    (card_5_value != 14 && pick == 'right')) {
+                    choiseLabel = game.add.text(w / 2, h / 1.9, texts[10] + drinkcount + texts[11], { font: '250% Arial', fill: '#000', align: 'center', wordWrap: 'true', wordWrapWidth: w / 1.5 });
+                    choiseLabel.anchor.setTo(0.5, 0.5);
+            		choiseLabel.fontSize = fontsize * 1.5;
+
+            		var player = localStorage.getItem('currPlayer');
+            		var playerCount = parseInt(localStorage.getItem('playercount'), 10)
+                    var playerDrinks = 0;
+                    if (localStorage.getItem('playerdrinks' + player) != null) {
+                        playerDrinks = localStorage.getItem('playerdrinks' + player);
+                    }
+                    playerDrinks = parseInt(playerDrinks) + parseInt(drinkcount);
+                    localStorage.setItem('playerdrinks' + player, playerDrinks);
+                    player++;
+                    if(player >= playerCount){
+                        player = 0;
+                    }
+                    if(fromMainGame == 1)
+                    {
+                        localStorage.setItem('newGame', 0);
+
+                        localStorage.setItem('currPlayer', player);
+		            	document.location.href = "mainGame.html";		            	
+		            }
+		            else
+		            {
+			            document.location.href = "miniSpielWaehlen.html";
+		            }
+
+                }
+                else {
+                    drinkcount += 5;
+
+                    trinken = game.add.text(w / 2, h / 1.9, texts[9], { font: '250% Arial', fill: '#000', align: 'center', wordWrap: 'true', wordWrapWidth: w / 1.5 });
+                    trinken.anchor.setTo(0.5, 0.5);
+                    trinken.fontSize = fontsize * 1.5;
+
+                    choiseLabel.destroy();
+
+                    game.time.events.add(Phaser.Timer.SECOND * 1.5, function () {
+                        trinken.destroy();
+
+                        startMenu();
+                    })
+                }
+            })
+        }
+    </script>
+
+</body>
+</html>
