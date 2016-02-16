@@ -26,8 +26,14 @@
 
         //Mini-Games
         var ingameGames = ['busfahren', 'kingCircle', 'habNie', 'augensaufen', 'werfDichDicht', 'kistenStapeln'];
-        var gameChance = 1; //1 = standard, 1000000 sehr häufig
         var gameIndex;
+
+        //Chancen: (einzelne Chance) / (gameChance + easyChance + mediumChance + hardChance)  = chance für ergebnis (bsp: 2 / (2+4+4+3) = gameChance: 15%)
+        var gameChance = 2; //1 = standard, 1000000 sehr häufig
+        var easyChance = 4; //Standard 4, 4, 3
+        var mediumChance = 4;
+        var hardChance = 3;
+
 
         //Aufgaben
         var easyTasks = [];
@@ -504,9 +510,7 @@
             }*/
             var rnd;
             var icon;
-            var easyChance = 4; //Standard 4, 4, 3
-            var mediumChance = 4;
-            var hardChance = 3;
+
             var sumChance = easyChance + mediumChance + hardChance + gameChance;
             var diff;
 

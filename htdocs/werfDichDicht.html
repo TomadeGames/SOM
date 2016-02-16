@@ -41,7 +41,9 @@
         var animationCounter = 0;
 
         //Timer:
-        var popUpTimer;
+        var popUpTimer = null;
+        
+        var inputEnabled = false;
 
         var isShuffeling = false;
         var shuffleSpeed = 0.8;
@@ -200,8 +202,10 @@
         }
 
         function nextPlayer() {
-            popUpTimer.stop();
-            popUpTimer.destroy();
+            if (popUpTimer != null) {
+                popUpTimer.stop();
+                popUpTimer.destroy();
+            }
             increasePlayer();
             popUp.visible = true;
             popUpText.visible = true;
@@ -214,16 +218,16 @@
                 }
                 if (gameCounter < player.length * 3) {     //Bedingung zum beenden
                     gameCounter++;
-                    invisibleButton.onInputUp.addOnce(shuffleDice);
+                    invisibleButton.onInputUp.add(shuffleDice);
                 }
                 else {
                     invisibleButton.onInputUp.addOnce(leaveGame);
                 }
             }
             else {
-                invisibleButton.onInputUp.addOnce(shuffleDice);
+                invisibleButton.onInputUp.add(shuffleDice);
             }
-
+            inputEnabled = true;
         }
 
         function howToClick() {
@@ -270,18 +274,21 @@
         }
 
         function shuffleDiceAnimationComplete() {
-            isShuffeling = false;
-            invisibleButton.visible = false;
-            if (glasesImg[dice.frame].frame == 1) { //Glas voll
-                glasesImg[dice.frame].play('empty');
-                glasesImg[dice.frame].events.onAnimationComplete.addOnce(emptyAnimationComplete);
-                glasesImg[dice.frame].frame = 0;
-            }
-            else    //Glas leer
-            {
-                glasesImg[dice.frame].animations.play('fill');
-                glasesImg[dice.frame].events.onAnimationComplete.addOnce(fillAnimationComplete);
-                glasesImg[dice.frame].frame = 1;
+            if (inputEnabled) {
+                invisibleButton.onInputUp.removeAll();
+                isShuffeling = false;
+                invisibleButton.visible = false;
+                if (glasesImg[dice.frame].frame == 1) { //Glas voll
+                    glasesImg[dice.frame].play('empty');
+                    glasesImg[dice.frame].events.onAnimationComplete.addOnce(emptyAnimationComplete);
+                    glasesImg[dice.frame].frame = 0;
+                }
+                else    //Glas leer
+                {
+                    glasesImg[dice.frame].animations.play('fill');
+                    glasesImg[dice.frame].events.onAnimationComplete.addOnce(fillAnimationComplete);
+                    glasesImg[dice.frame].frame = 1;
+                }
             }
         }
 
@@ -301,27 +308,34 @@
         }
 
         function shuffleDice() {
-            popUp.visible = false;
-            popUpText.visible = false;
-            if (fromMainGame == 1) {
-                drink_label.text = gameCounter + '/' + turnCount;
+            if (inputEnabled) {
+                invisibleButton.onInputUp.removeAll();
+                inputEnabled = false;
+                popUp.visible = false;
+                popUpText.visible = false;
+                if (fromMainGame == 1) {
+                    drink_label.text = gameCounter + '/' + turnCount;
+                }
+                isShuffeling = true;
+                invisibleButton.onInputUp.add(shuffleDiceAnimationComplete);
+                inputEnabled = true;
             }
-            isShuffeling = true;
-            invisibleButton.onInputUp.addOnce(shuffleDiceAnimationComplete);
         }
 
         function leaveGame() {
-            var i = 0;
-            for (; i < player.length; i++) {
-                localStorage.setItem('playerdrinks' + i, player[i].drinkcount);
-            }
-            localStorage.setItem('currPlayer', currPlayer);
-            localStorage.setItem('newGame', 0);
-            if (fromMainGame == 1) {
-            	document.location.href = "mainGame.html";
-            }
-            else {
-                document.location.href = "miniSpielWaehlen.html";
+            if (inputEnabled) {
+                var i = 0;
+                for (; i < player.length; i++) {
+                    localStorage.setItem('playerdrinks' + i, player[i].drinkcount);
+                }
+                localStorage.setItem('currPlayer', currPlayer);
+                localStorage.setItem('newGame', 0);
+                if (fromMainGame == 1) {
+                    document.location.href = "mainGame.html";
+                }
+                else {
+                    document.location.href = "miniSpielWaehlen.html";
+                }
             }
         }
 

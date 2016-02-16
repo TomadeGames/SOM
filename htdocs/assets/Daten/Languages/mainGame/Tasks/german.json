@@ -1114,5 +1114,14 @@
     "anzahl": "3",
     "ziel": "self",
     "kategorie": "viel"
+  },
+  {
+    "id": "125",
+    "text": "Jeder mit einem BH trinkt",
+    "kosten": "0",
+    "warscheinlichkeit": "1",
+    "anzahl": "1",
+    "ziel": "self",
+    "kategorie": "wenig"
   }
 ]
