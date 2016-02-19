@@ -4,7 +4,7 @@
 	"text":"Your Neighbours drink 3",
 	"kosten":"0",
 	"warscheinlichkeit":"1",
-	"anzahl":"0",
+	"anzahl":"3",
 	"ziel":"neighbours",
 	"kategorie":"wenig"
 	},
@@ -13,8 +13,8 @@
 	"text":"Everyone except you drink 3",
 	"kosten":"0",
 	"warscheinlichkeit":"1",
-	"anzahl":"0",
-	"ziel":"self",
+	"anzahl":"3",
+	"ziel":"allButYou",
 	"kategorie":"mittel"
 	},
 	{
