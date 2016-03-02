@@ -3,8 +3,8 @@ $(document).on("pagecreate", "#pageone", initialize);
 
 var playerCount = 0;    //id, colheaders count from 0 - current playercount (max 0-9)
 var currentElement;
-var currentElemPlayerIndex = -1;
-var currentElemIndex = -3;
+var currentElemPlayerIndex = -1;//currentCollheader
+var currentElemIndex = -3;//currentElementOfCollheader
 var scrollSpeed = 600;
 var doCollapsibleEvent = true;
 var pictureSource;   // picture source
@@ -60,7 +60,9 @@ function initialize() {
     $('#colPlayer' + playerCount).find('#hiddenInput').val('m');
     //$('#colPlayer'+playerCount).find('input').eq(0).attr('id', 'name'+playerCount);
 
-    //addadd    
+    $('#colPlayer0').find('input').eq(0).focus();
+
+    //New Player    
     $('#addButton').click(function () {
         playerCount++;
         //deep copy player inputs from first player into new collapsible header
@@ -76,21 +78,20 @@ function initialize() {
         $('#colPlayer' + playerCount).find('#hideInput').hide();
         //input fields reset to default values
         $('#colPlayer' + playerCount).addClass('colPlayerclass');
-        $('#colPlayer' + playerCount).find('input').eq(0).val(null);//name
+        $('#colPlayer' + playerCount).find('input').eq(0).val(null);//name        
         $('#colPlayer' + playerCount).find('input').eq(1).val(70);//weight          
+        $('#colPlayer' + playerCount).find('label').eq(0).text(texts[2] + texts[13] + (playerCount + 1));
         $('#colPlayer' + playerCount).find('.genderLabel').children('label').empty();//gender
         $('#colPlayer' + playerCount).find('.genderLabel').children('label').append(texts[4]);
         $('#colPlayer' + playerCount).find('#hiddenInput').val('m');
         $('#colPlayer' + playerCount).find('#maleButton').addClass('blueButton');
         $('#colPlayer' + playerCount).find('#femaleButton').removeClass('blueButton');
 
-
-        currentElement = $('#colPlayer' + playerCount).find('input').eq(0);
+        //Focus & Scrolling to New Player
+        $('#colPlayer' + playerCount).find('input').eq(0).focus();
+        currentElement = $('#colPlayer' + playerCount).find('input').eq(0);        
         currentElemPlayerIndex = playerCount;
-        currentElemIndex = 0;
-        $('html, body').animate({
-            scrollTop: $('#colPlayer' + playerCount).offset().top
-        }, scrollSpeed);       
+        currentElemIndex = 0;  
         $('html, body').animate({
             scrollTop: $('#colPlayer' + playerCount).find('label').eq(0).offset().top
         }, scrollSpeed);
@@ -117,8 +118,10 @@ function initialize() {
 
     $(document).on('keyup', 'input#name', function () {
         var currentName = $(this).val();
+        console.log(currentName);
         if (!(currentName == '' || currentName == null)) {
-            $(this).parents('#colContent').parent().siblings().html('<a class="ui-collapsible-heading-toggle ui-btn ui-icon-carat-d ui-btn-icon-left ui-btn-inherit" href="#">' + currentName + '<span class="ui-collapsible-heading-status">click to collapse contents</span></a>');
+            $(this).parents('#colContent').parent().siblings().html('<a class="ui-collapsible-heading-toggle ui-btn ui-icon-carat-d ui-btn-icon-left ui-btn-inherit" href="#">' + currentName + '<span class="ui-collapsible-heading-status">click to collapse contents</span></a>');           
+            $(this).parents('#colContent').find('label').eq(0).text(texts[2] + currentName);
         }
     });
 
@@ -217,7 +220,7 @@ function initialize() {
                     currentElement = $('#colPlayer' + currentElemPlayerIndex).find('label').eq(currentElemIndex);                             
                     $('html, body').animate({
                         scrollTop: $('#colPlayer' + currentElemPlayerIndex).offset().top
-                    }, scrollSpeed);
+                    }, scrollSpeed * 0.7);
                     doCollapsibleEvent = false;
                     $('#colPlayer' + currentElemPlayerIndex).collapsible('expand'); 
                 }
@@ -238,12 +241,15 @@ function initialize() {
                     }
                 }
             }         
-        }
+        }        
         console.log('player: ' + currentElemPlayerIndex + ' index: ' + currentElemIndex + ' last' );
-        //currentElement = $('#colPlayer' + currentElemPlayerIndex).find('label').eq(currentElemIndex);
+        //Animation & Focus. If Input, set Focus, do Animation
+        if(currentElemIndex == 0 || currentElemIndex == 1){
+            $('#colPlayer' + currentElemPlayerIndex).find('input').eq(currentElemIndex).focus();
+        }    
         $('html, body').animate({
             scrollTop: currentElement.offset().top
-        }, scrollSpeed);
+        }, scrollSpeed * 0.7);            
     });
 
     $(document).on('click', '#nextBtn', function () {
@@ -270,7 +276,7 @@ function initialize() {
                 currentElement = $('#colPlayer' + currentElemPlayerIndex).find('label').eq(currentElemIndex);
                 $('html, body').animate({
                     scrollTop: $('#colPlayer0').offset().top
-                }, scrollSpeed);
+                }, scrollSpeed * 0.7);
                 if(currentElement.parents().is('.ui-collapsible-collapsed')){
                     doCollapsibleEvent = false;
                     currentElement.parents('.ui-collapsible-collapsed').collapsible('expand');
@@ -291,19 +297,22 @@ function initialize() {
                     currentElemPlayerIndex++; 
                     currentElemIndex = 0;                    
                     currentElement = $('#colPlayer' + currentElemPlayerIndex).find('label').eq(currentElemIndex);
-                    $('html, body').animate({
-                        scrollTop: $('#colPlayer' + (currentElemPlayerIndex-1)).offset().top
-                    }, scrollSpeed);                    
+                    //$('html, body').animate({
+                     //   scrollTop: $('#colPlayer' + (currentElemPlayerIndex-1)).offset().top
+                   // }, scrollSpeed * 2);                    
                     $('#colPlayer' + currentElemPlayerIndex).collapsible('expand');                                                     
                 }
             }
         }
         
         console.log('player: ' + currentElemPlayerIndex + ' index: ' + currentElemIndex + ' next' );
-        //currentElement = $('#colPlayer' + currentElemPlayerIndex).find('label').eq(currentElemIndex);
+        //Animation & Focus. If Input, set Focus, do Animation
+        if(currentElemIndex == 0 || currentElemIndex == 1){
+            $('#colPlayer' + currentElemPlayerIndex).find('input').eq(currentElemIndex).focus();
+        }    
         $('html, body').animate({
             scrollTop: currentElement.offset().top
-        }, scrollSpeed);
+        }, scrollSpeed * 0.7);
     });
     
         
@@ -315,9 +324,9 @@ function initialize() {
             currentElemPlayerIndex = deleteId * 1;
             currentElemIndex = 0;
             currentElement = $(this);
-            $('html, body').animate({
-                scrollTop: currentElement.offset().top
-            }, scrollSpeed);
+            //$('html, body').animate({
+            //    scrollTop: currentElement.offset().top
+            //}, scrollSpeed);
             currentElement = $(this).find('label').eq(currentElemIndex);
             $('html, body').animate({
                 scrollTop: currentElement.offset().top
@@ -325,6 +334,20 @@ function initialize() {
         }
         doCollapsibleEvent = true;
     });
+
+    $(document).on( 'focus', 'input' , function( event, ui ) {
+        console.log("FOCUS" + $(this).attr('id'));
+        if(currentElemPlayerIndex < 0){
+            currentElemPlayerIndex = 0;
+        }
+        if($(this).attr('id') == 'name'){
+            currentElemIndex = 0;            
+        }
+        else if ($(this).attr('id') == 'weight'){
+            currentElemIndex = 1;
+        }
+    });
+
 
     //$('#h01_1').html('Saufomat');//test, jQuery running, syntax error
 }
